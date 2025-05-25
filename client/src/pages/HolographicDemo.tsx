@@ -13,8 +13,31 @@ export default function HolographicDemo() {
   const [showModal, setShowModal] = useState(false);
 
   // Fetch cards from your API
-  const { data: cards = [], isLoading } = useQuery<CardType[]>({
+  const { data: fetchedCards = [], isLoading } = useQuery<CardType[]>({
     queryKey: ['/api/cards'],
+  });
+  
+  // Add simulated rarity to cards for demo purposes
+  const cards = fetchedCards.map((card, index) => {
+    // Assign simulated rarity based on card properties
+    let simulatedRarity = "Common";
+    
+    // Use card number or other properties to determine rarity for demo
+    const cardNumber = parseInt(card.number.replace(/\D/g, '') || "0");
+    if (cardNumber % 10 === 0) {
+      simulatedRarity = "Secret Rare";
+    } else if (cardNumber % 5 === 0) {
+      simulatedRarity = "Ultra Rare";
+    } else if (cardNumber % 3 === 0) {
+      simulatedRarity = "Rare Holo";
+    } else if (cardNumber % 2 === 0) {
+      simulatedRarity = "Uncommon";
+    }
+    
+    return {
+      ...card,
+      rarity: simulatedRarity
+    };
   });
   
   // Filter cards by rarity when selected
@@ -39,11 +62,12 @@ export default function HolographicDemo() {
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-2">Filter by Rarity</h2>
           <Tabs defaultValue="all" onValueChange={setSelectedRarity} className="w-full">
-            <TabsList className="grid grid-cols-4 mb-4">
+            <TabsList className="grid grid-cols-5 mb-4">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="common">Common</TabsTrigger>
-              <TabsTrigger value="rare">Rare</TabsTrigger>
-              <TabsTrigger value="ultra">Ultra Rare</TabsTrigger>
+              <TabsTrigger value="uncommon">Uncommon</TabsTrigger>
+              <TabsTrigger value="holo">Rare Holo</TabsTrigger>
+              <TabsTrigger value="secret">Secret</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -54,16 +78,19 @@ export default function HolographicDemo() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-            {filteredCards.slice(0, 8).map((card) => (
+            {filteredCards.slice(0, 12).map((card) => (
               <div key={card.id} className="flex flex-col items-center">
                 <HolographicCard 
                   card={card} 
                   onClick={handleCardClick}
                   className="w-full h-64 mb-2"
                 />
-                <p className="text-xs text-center text-gray-500 mt-1">
-                  Rarity: {card.rarity}
-                </p>
+                <div className="text-center mt-1">
+                  <p className="text-sm font-medium">{card.name.substring(0, 20)}{card.name.length > 20 ? '...' : ''}</p>
+                  <p className="text-xs text-center text-gray-500">
+                    Rarity: {card.rarity}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

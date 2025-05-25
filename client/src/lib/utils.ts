@@ -49,7 +49,22 @@ export function calculateCardRarity(card: any): number {
     'secret rare': 6
   };
   
-  return rarityScores[card.rarity.toLowerCase()] || 1;
+  // Handle case variations in rarity names
+  const normalizedRarity = card.rarity.toLowerCase().replace(/\s+/g, ' ');
+  
+  // Check for partial matches if exact match isn't found
+  if (rarityScores[normalizedRarity] !== undefined) {
+    return rarityScores[normalizedRarity];
+  }
+  
+  // Try to find a partial match
+  for (const [key, score] of Object.entries(rarityScores)) {
+    if (normalizedRarity.includes(key)) {
+      return score;
+    }
+  }
+  
+  return 1; // Default to common
 }
 
 export function debounce<T extends (...args: any[]) => any>(

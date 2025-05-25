@@ -33,8 +33,15 @@ export default function HolographicCard({
   const rotateX = useTransform(y, [-300, 300], [15, -15]);
   const rotateY = useTransform(x, [-300, 300], [-15, 15]);
   
-  // Apply spring physics for smooth animation
-  const springConfig = { stiffness: 150, damping: 20 };
+  // Apply spring physics for smooth animation - adjust based on rarity
+  const springStiffness = 150 - (rarityLevel * 15); // Higher rarity = softer springs
+  const springDamping = 20 - (rarityLevel * 2); // Higher rarity = less damping
+  
+  const springConfig = { 
+    stiffness: Math.max(80, springStiffness), 
+    damping: Math.max(10, springDamping) 
+  };
+  
   const springRotateX = useSpring(rotateX, springConfig);
   const springRotateY = useSpring(rotateY, springConfig);
   
