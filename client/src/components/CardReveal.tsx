@@ -107,10 +107,12 @@ export default function CardReveal({ cards }: CardRevealProps) {
                   <img 
                     src={card.image} 
                     alt={card.name} 
-                    className="w-full h-full object-cover rounded"
+                    className="w-full h-full object-contain rounded"
                     loading="lazy"
                     onError={(e) => {
-                      e.currentTarget.src = `https://via.placeholder.com/300x400/FF6B6B/FFFFFF?text=${encodeURIComponent(card.name)}`;
+                      console.error(`Failed to load image for card: ${card.name}`);
+                      // Remove the image element if loading fails
+                      e.currentTarget.style.display = 'none';
                     }}
                   />
                 </div>
