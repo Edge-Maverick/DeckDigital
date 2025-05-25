@@ -78,12 +78,11 @@ export default function HolographicDemo() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             {filteredCards.slice(0, 12).map((card) => (
-              <div key={card.id} className="flex flex-col items-center">
+              <div key={card.id} className="h-80">
                 <HolographicCard 
                   card={card} 
-                  className="w-full h-64 mb-2"
+                  className="w-full h-full"
                 />
-
               </div>
             ))}
           </div>

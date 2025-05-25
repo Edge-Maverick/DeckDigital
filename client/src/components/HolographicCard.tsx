@@ -168,7 +168,7 @@ export default function HolographicCard({
       onMouseEnter={handleMouseEnter}
     >
       <motion.div 
-        className="relative w-full h-full preserve-3d rounded-lg overflow-hidden cursor-pointer"
+        className="relative w-full h-full preserve-3d overflow-hidden cursor-pointer"
         style={{
           rotateX: isHovering ? springRotateX : 0,
           rotateY: isHovering ? springRotateY : 0,
@@ -244,14 +244,15 @@ export default function HolographicCard({
           />
         )}
         
-        {/* Card content */}
-        <div className="relative z-20 bg-white dark:bg-gray-800 h-full rounded-lg overflow-hidden">
+        {/* Card content - no white background/border, just the card image */}
+        <div className="relative z-20 h-full overflow-hidden">
           {/* Card image - full size with no details */}
           <div className="relative overflow-hidden h-full">
             <img 
               src={card.image} 
               alt={card.name} 
               className="w-full h-full object-contain z-20"
+              style={{ transform: "scale(1.25)" }} /* Scale up to remove white borders */
               loading="lazy"
               onError={(e) => {
                 console.error(`Failed to load image for card: ${card.name}`);
