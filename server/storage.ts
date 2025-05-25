@@ -171,11 +171,25 @@ export class MemStorage implements IStorage {
   }
   
   private mapTCGdexCardToInsertCard(tcgdexCard: TCGdexCard): InsertCard {
+    // Format the image URL with high quality and png extension
+    // Original format: https://assets.tcgdex.net/en/swsh/swsh3/136/high.png
+    let formattedImageUrl = tcgdexCard.image;
+    
+    // If it's a TCGdex URL, format it to use high quality and png extension
+    if (formattedImageUrl && formattedImageUrl.includes('assets.tcgdex.net')) {
+      // Extract the base path by removing any existing quality/extension
+      const baseUrlParts = formattedImageUrl.split('/');
+      // Remove the last part (which might have quality.extension)
+      baseUrlParts.pop();
+      // Add our specified quality and extension
+      formattedImageUrl = `${baseUrlParts.join('/')}/high.png`;
+    }
+    
     return {
       cardId: tcgdexCard.id,
       name: tcgdexCard.name.en,
       number: tcgdexCard.number,
-      image: tcgdexCard.image || "https://via.placeholder.com/300x400?text=Card+Image",
+      image: formattedImageUrl || "https://via.placeholder.com/300x400?text=Card+Image",
       type: tcgdexCard.types?.[0] || "Normal",
       rarity: tcgdexCard.rarity || "Common",
       set: tcgdexCard.set?.name?.en || "Base Set",
