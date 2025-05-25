@@ -174,7 +174,7 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           className="absolute inset-0 z-20 transition-opacity duration-200" 
           style={{
             background: `radial-gradient(ellipse at ${coords.x}% ${coords.y}%, ${colorScheme.highlight} 0%, ${colorScheme.primary} 40%, ${colorScheme.accent} 80%)`,
-            opacity: isActive ? 0.7 : 0.3,
+            opacity: isActive ? 0.4 : 0.2,
             mixBlendMode: 'color-dodge',
           }}
         />
@@ -185,25 +185,25 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           style={{
             background: `
               radial-gradient(circle at ${coords.x}% ${coords.y}%, 
-              rgba(255, 255, 255, 0.95) 0%, 
-              rgba(255, 255, 255, 0.5) 15%, 
-              rgba(255, 255, 255, 0.2) 30%,
+              rgba(255, 255, 255, 0.9) 0%, 
+              rgba(255, 255, 255, 0.3) 15%, 
+              rgba(255, 255, 255, 0.1) 30%,
               transparent 60%)
             `,
-            opacity: isActive ? 1 : 0.5,
+            opacity: isActive ? 0.7 : 0.3,
             mixBlendMode: 'screen',
           }}
         />
         
-        {/* Rainbow prism effect - animated */}
+        {/* Rainbow prism effect - animated - more subtle */}
         <motion.div 
           className="absolute inset-0 z-30" 
           style={{
-            background: 'linear-gradient(45deg, rgba(255,0,0,0.3), rgba(255,165,0,0.3), rgba(255,255,0,0.3), rgba(0,255,0,0.3), rgba(0,255,255,0.3), rgba(0,0,255,0.3), rgba(128,0,128,0.3))',
+            background: 'linear-gradient(45deg, rgba(255,0,0,0.15), rgba(255,165,0,0.15), rgba(255,255,0,0.15), rgba(0,255,0,0.15), rgba(0,255,255,0.15), rgba(0,0,255,0.15), rgba(128,0,128,0.15))',
             backgroundSize: '400% 400%',
-            opacity: isActive ? 0.6 : 0.3,
+            opacity: isActive ? 0.4 : 0.2,
             mixBlendMode: 'color-dodge',
-            filter: 'contrast(1.5) saturate(1.5)',
+            filter: 'contrast(1.3) saturate(1.3)',
           }}
           animate={{
             backgroundPosition: ['0% 0%', '100% 100%']
@@ -215,7 +215,7 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           }}
         />
         
-        {/* Sharp horizontal light sweep that moves with tilt */}
+        {/* Sharp horizontal light sweep that moves with tilt - more subtle */}
         <div 
           className="absolute inset-0 z-35 transition-all duration-150" 
           style={{
@@ -224,14 +224,14 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
                 ${90 + (rotateY * 2)}deg,
                 transparent 0%,
                 transparent ${40 - (rotateX * 2)}%,
-                rgba(255, 255, 255, 0.8) 45%,
-                rgba(255, 255, 255, 1) 50%,
-                rgba(255, 255, 255, 0.8) 55%,
+                rgba(255, 255, 255, 0.6) 45%,
+                rgba(255, 255, 255, 0.8) 50%,
+                rgba(255, 255, 255, 0.6) 55%,
                 transparent ${60 + (rotateX * 2)}%,
                 transparent 100%
               )
             `,
-            opacity: isActive ? 0.9 : 0.3,
+            opacity: isActive ? 0.6 : 0.2,
             mixBlendMode: 'overlay',
             transform: `translateY(${rotateX}px)`,
           }}
