@@ -1,6 +1,6 @@
 import { useLocation, Link } from "wouter";
 import { cn } from "@/lib/utils";
-import { ShoppingCart, Box, FolderOpen } from "lucide-react";
+import { ShoppingCart, Box, FolderOpen, Sparkles } from "lucide-react";
 
 export default function NavBar() {
   const [location] = useLocation();
@@ -29,6 +29,12 @@ export default function NavBar() {
           label="Collection" 
           path="/collection" 
           isActive={isActive("/collection")} 
+        />
+        <NavItem 
+          icon={<Sparkles className="text-xl mb-1" />} 
+          label="Holo Demo" 
+          path="/holo-demo" 
+          isActive={isActive("/holo-demo")} 
         />
       </div>
     </nav>
