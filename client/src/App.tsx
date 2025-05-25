@@ -7,6 +7,7 @@ import Layout from "@/components/Layout";
 import ShopPage from "@/pages/ShopPage";
 import OpenPackPage from "@/pages/OpenPackPage";
 import CollectionPage from "@/pages/CollectionPage";
+import HolographicDemo from "@/pages/HolographicDemo";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/hooks/use-theme-provider";
 import { CollectionProvider } from "@/hooks/use-collection";
@@ -18,6 +19,7 @@ function Router() {
         <Route path="/" component={ShopPage} />
         <Route path="/open-pack" component={OpenPackPage} />
         <Route path="/collection" component={CollectionPage} />
+        <Route path="/holo-demo" component={HolographicDemo} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

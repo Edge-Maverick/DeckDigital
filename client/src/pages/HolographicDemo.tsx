@@ -4,7 +4,7 @@ import HolographicCard from "@/components/HolographicCard";
 import { Card as CardType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CardDetailModal } from "@/components/CardDetailModal";
+import CardDetailModal from "@/components/CardDetailModal";
 import { useQuery } from "@tanstack/react-query";
 
 export default function HolographicDemo() {
