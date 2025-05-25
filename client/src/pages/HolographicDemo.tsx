@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import HolographicCard from "@/components/HolographicCard";
+import HolographicTiltCard from "@/components/HolographicTiltCard";
 import { Card as CardType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -78,7 +78,7 @@ export default function HolographicDemo() {
         ) : (
           <div className="flex justify-center items-center min-h-[500px]">
             {filteredCards.length > 0 && (
-              <HolographicCard 
+              <HolographicTiltCard 
                 card={filteredCards[0]} 
                 className="w-[280px] h-[390px]"
               />
