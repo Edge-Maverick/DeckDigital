@@ -1,8 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Modern TCG styling utilities */
+@layer utilities {
+  .bg-grid-pattern {
+    background-size: 20px 20px;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  }
+  
+  .bg-dot-pattern {
+    background-size: 20px 20px;
+    background-image: radial-gradient(
+      rgba(255, 255, 255, 0.15) 2px,
+      transparent 2px
+    );
+  }
+
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .text-shadow-lg {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+  
+  .card-glow {
+    box-shadow: 0 0 15px rgba(var(--accent) / 0.5);
+  }
+}
 
 :root {
   --background: 247 247 247; /* #F7F7F7 */
