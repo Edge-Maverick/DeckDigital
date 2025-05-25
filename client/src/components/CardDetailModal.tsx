@@ -69,8 +69,12 @@ export default function CardDetailModal({ card, isOpen, onClose }: CardDetailMod
             <img 
               src={card.image} 
               alt={card.name} 
-              className="w-full object-cover"
-
+              className="w-full object-contain"
+              onError={(e) => {
+                console.error(`Failed to load image for card: ${card.name}`);
+                // Remove the image element if loading fails
+                e.currentTarget.style.display = 'none';
+              }}
             />
           </div>
           
