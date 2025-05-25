@@ -8,6 +8,7 @@ import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, Star, Sparkles, ImageIcon, Loader2 } from "lucide-react";
 import { getCardTypeColor } from "@/lib/utils";
 import ParticleEffect, { CardSparkleEffect } from "./ParticleEffect";
+import HolographicTiltCard from "./HolographicTiltCard";
 
 interface CardRevealProps {
   cards: Card[];
@@ -418,15 +419,12 @@ export default function CardReveal({ cards }: CardRevealProps) {
                       
                       {isCurrentCardLoaded && (
                         <>
-                          <img 
-                            src={currentCard.image}
-                            alt={currentCard.name}
-                            className="max-w-full max-h-full object-contain rounded"
-                            onError={(e) => {
-                              console.error(`Failed to display loaded image for card: ${currentCard.name}`);
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
+                          <div className="w-full h-full">
+                            <HolographicTiltCard 
+                              card={currentCard} 
+                              className="w-full h-full"
+                            />
+                          </div>
                           {/* Card sparkle effect based on rarity and type */}
                           <CardSparkleEffect 
                             active={isRevealed} 

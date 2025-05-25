@@ -1,6 +1,7 @@
 import { Card } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import HolographicTiltCard from "./HolographicTiltCard";
 
 interface CardItemProps {
   card: Card;
@@ -20,19 +21,17 @@ export default function CardItem({ card, onClick, className }: CardItemProps) {
       className={cn("card-container cursor-pointer", className)} 
       onClick={handleClick}
     >
-      <div className="bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden transition transform hover:scale-105 duration-300">
-        <img 
-          src={card.image} 
-          alt={card.name} 
-          className="w-full h-40 object-contain"
-          loading="lazy"
-          onError={(e) => {
-            console.error(`Failed to load image for card: ${card.name}`);
-            // Remove the image element if loading fails instead of showing a broken image
-            e.currentTarget.style.display = 'none';
-          }}
-        />
-        <div className="p-2">
+      <div className="flex flex-col">
+        {/* Holographic card image with 3D effect */}
+        <div className="h-48 relative">
+          <HolographicTiltCard 
+            card={card} 
+            className="w-full h-full mb-1"
+          />
+        </div>
+        
+        {/* Card details below the holographic image */}
+        <div className="bg-white dark:bg-gray-700 rounded-lg shadow-md p-2 mt-1">
           <p className="font-medium text-sm truncate">{card.name}</p>
           <div className="flex justify-between items-center">
             <span className="text-xs text-gray-500 dark:text-gray-400">#{card.number}</span>
