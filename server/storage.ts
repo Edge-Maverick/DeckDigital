@@ -119,7 +119,7 @@ export class MemStorage implements IStorage {
         name: "Base Set Pack",
         description: "5 random cards with at least one rare.",
         price: 500,
-        image: "https://assets.tcgdex.net/en/base/base1/booster/high.png",
+        image: "https://assets.tcgdex.net/en/base/packs/base1/high.png",
         cardsPerPack: 5
       },
       {
@@ -127,7 +127,7 @@ export class MemStorage implements IStorage {
         name: "Sword & Shield Pack",
         description: "5 random cards with guaranteed ultra-rare.",
         price: 1000,
-        image: "https://assets.tcgdex.net/en/swsh/swsh1/booster/high.png",
+        image: "https://assets.tcgdex.net/en/swsh/packs/swsh1/high.png",
         cardsPerPack: 5
       },
       {
@@ -135,7 +135,7 @@ export class MemStorage implements IStorage {
         name: "Cosmic Eclipse",
         description: "Discover rare cosmic variants and holographic cards in this limited edition pack.",
         price: 1200,
-        image: "https://assets.tcgdex.net/en/sm/sm12/booster/high.png",
+        image: "https://assets.tcgdex.net/en/sm/packs/sm12/high.png",
         cardsPerPack: 5
       }
     ];
