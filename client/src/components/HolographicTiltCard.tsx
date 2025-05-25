@@ -147,13 +147,14 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           }}
         />
         
-        {/* Fine holographic line pattern */}
+        {/* Card texture based on rarity */}
         <div 
           className="absolute inset-0 z-10" 
           style={{
-            backgroundImage: 'repeating-linear-gradient(95deg, transparent, transparent 3px, rgba(255,255,255,0.07) 3px, rgba(255,255,255,0.07) 5px)',
-            backgroundSize: '10px 100%',
-            opacity: isActive ? 0.6 : 0.3,
+            backgroundImage: getCardTexture(rarityLevel),
+            backgroundSize: '100% 100%',
+            opacity: isActive ? 0.7 : 0.4,
+            mixBlendMode: 'overlay'
           }}
         />
 
@@ -245,7 +246,17 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           }}
         >
           <div className="text-white text-sm font-semibold">{card.name}</div>
-          <div className="text-xs text-white/80">{card.rarity} • {card.type}</div>
+          <div className="text-xs text-white/80">
+            {card.rarity} • {card.type}
+            <span className="ml-1 opacity-70">
+              {rarityLevel === 1 && <span className="text-gray-400">[MATTE]</span>}
+              {rarityLevel === 2 && <span className="text-gray-300">[GLOSSY]</span>}
+              {rarityLevel === 3 && <span className="text-blue-300">[LINEN]</span>}
+              {rarityLevel === 4 && <span className="text-purple-300">[SILK]</span>}
+              {rarityLevel === 5 && <span className="text-amber-300">[METAL]</span>}
+              {rarityLevel === 6 && <span className="text-pink-300">[ETCHED]</span>}
+            </span>
+          </div>
         </div>
         
         {/* Shine effect - subtle */}
