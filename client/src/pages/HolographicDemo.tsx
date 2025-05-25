@@ -85,7 +85,7 @@ export default function HolographicDemo() {
                   className="w-full h-64 mb-2"
                 />
                 <div className="text-center mt-1">
-                  <p className="text-sm font-medium">{card.name.substring(0, 20)}{card.name.length > 20 ? '...' : ''}</p>
+                  <p className="text-sm font-medium">{card.name ? card.name.substring(0, 20) + (card.name.length > 20 ? '...' : '') : 'Card'}</p>
                   <p className="text-xs text-center text-gray-500">
                     Rarity: {card.rarity}
                   </p>

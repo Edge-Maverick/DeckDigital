@@ -56,6 +56,10 @@ export default function HolographicCard({
     [0, 360 * intensityFactor]
   );
   
+  // Make sure we have valid card properties
+  const cardType = card?.type || 'normal';
+  const cardRarity = card?.rarity || 'Common';
+  
   // State for hover detection
   const [isHovering, setIsHovering] = useState(false);
   
@@ -118,7 +122,7 @@ export default function HolographicCard({
   };
 
   // Card type color for the holographic effects
-  const typeColor = getCardTypeColor(card.type);
+  const typeColor = getCardTypeColor(cardType);
   
   return (
     <div 
