@@ -82,26 +82,39 @@ export default function HolographicCard({
   
   // Handle mouse/touch movement
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current || isMobile) return;
+    if (!cardRef.current) return;
     
     const rect = cardRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    x.set(event.clientX - centerX);
-    y.set(event.clientY - centerY);
+    // Calculate distance from center (normalized to -1 to 1 range)
+    const normalizedX = (event.clientX - centerX) / (rect.width / 2);
+    const normalizedY = (event.clientY - centerY) / (rect.height / 2);
+    
+    // Scale for effect intensity
+    x.set(normalizedX * 300);
+    y.set(normalizedY * 300);
   };
   
   const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
+    
+    // Prevent scrolling when interacting with the card
+    event.preventDefault();
     
     const touch = event.touches[0];
     const rect = cardRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    x.set(touch.clientX - centerX);
-    y.set(touch.clientY - centerY);
+    // Calculate distance from center (normalized to -1 to 1 range)
+    const normalizedX = (touch.clientX - centerX) / (rect.width / 2);
+    const normalizedY = (touch.clientY - centerY) / (rect.height / 2);
+    
+    // Scale for effect intensity
+    x.set(normalizedX * 300);
+    y.set(normalizedY * 300);
   };
 
   // Reset position when not interacting
@@ -113,6 +126,19 @@ export default function HolographicCard({
   
   const handleMouseEnter = () => {
     setIsHovering(true);
+  };
+  
+  // Touch handlers for mobile
+  const handleTouchStart = () => {
+    setIsHovering(true);
+  };
+  
+  const handleTouchEnd = () => {
+    setTimeout(() => {
+      x.set(0);
+      y.set(0);
+      setIsHovering(false);
+    }, 50); // Small delay for smoother transition
   };
   
   const handleClick = () => {
@@ -131,6 +157,14 @@ export default function HolographicCard({
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
+      onTouchStart={() => setIsHovering(true)}
+      onTouchEnd={() => {
+        setTimeout(() => {
+          x.set(0);
+          y.set(0);
+          setIsHovering(false);
+        }, 50);
+      }}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
     >
