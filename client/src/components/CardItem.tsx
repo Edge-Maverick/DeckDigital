@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -9,9 +10,39 @@ interface CardItemProps {
 }
 
 export default function CardItem({ card, onClick, className }: CardItemProps) {
+  const [imageError, setImageError] = useState(false);
+  
   const handleClick = () => {
     if (onClick) {
       onClick(card);
+    }
+  };
+  
+  // Handle image loading errors
+  const handleImageError = () => {
+    // If the original image URL failed, try with the new domain format
+    if (!imageError) {
+      setImageError(true);
+    }
+  };
+  
+  // Get the correct image URL based on current state
+  const getImageUrl = () => {
+    if (!imageError) {
+      return card.image;
+    }
+    
+    // If original image failed, try constructing URL with new domain format
+    try {
+      // Extract the image filename if it exists in the URL
+      const urlParts = card.image.split('/');
+      const filename = urlParts[urlParts.length - 1];
+      
+      // Return URL with the new TCGdex domain format
+      return `https://tcgdex.dev/assets/${filename}`;
+    } catch (e) {
+      // If all else fails, use a placeholder
+      return "https://via.placeholder.com/300x400?text=Card+Image";
     }
   };
 
@@ -22,11 +53,11 @@ export default function CardItem({ card, onClick, className }: CardItemProps) {
     >
       <div className="bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden transition transform hover:scale-105 duration-300">
         <img 
-          src={card.image} 
+          src={getImageUrl()} 
           alt={card.name} 
           className="w-full h-40 object-cover"
           loading="lazy"
-
+          onError={handleImageError}
         />
         <div className="p-2">
           <p className="font-medium text-sm truncate">{card.name}</p>

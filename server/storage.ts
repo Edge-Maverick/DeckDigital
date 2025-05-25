@@ -171,15 +171,32 @@ export class MemStorage implements IStorage {
   }
   
   private mapTCGdexCardToInsertCard(tcgdexCard: TCGdexCard): InsertCard {
+    // Format the image URL correctly based on the updated TCGdex API
+    let imageUrl = tcgdexCard.image || "";
+    
+    // Ensure we're using the updated TCGdex assets domain
+    if (imageUrl) {
+      // If image URL is relative or from old domain, update to the new domain
+      if (!imageUrl.startsWith('http') || imageUrl.includes('assets.tcgdex.net')) {
+        // Extract just the image path if it's a full URL
+        const imagePath = imageUrl.includes('/') ? imageUrl.split('/').pop() : imageUrl;
+        // Use the new TCGdex assets domain as per their documentation
+        imageUrl = `https://tcgdex.dev/assets/${imagePath}`;
+      }
+    } else {
+      // Use a backup image source if no image is available
+      imageUrl = `https://tcgdex.dev/assets/placeholder.jpg`;
+    }
+    
     return {
       cardId: tcgdexCard.id,
       name: tcgdexCard.name.en,
       number: tcgdexCard.number,
-      image: tcgdexCard.image || "https://via.placeholder.com/300x400?text=Card+Image",
+      image: imageUrl,
       type: tcgdexCard.types?.[0] || "Normal",
       rarity: tcgdexCard.rarity || "Common",
       set: tcgdexCard.set?.name?.en || "Base Set",
-      description: tcgdexCard.description?.en,
+      description: tcgdexCard.description?.en || null,
       releaseDate: new Date().toISOString().split('T')[0],
       abilities: tcgdexCard.abilities || []
     };
