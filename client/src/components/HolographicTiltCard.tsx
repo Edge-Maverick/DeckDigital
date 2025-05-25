@@ -110,71 +110,32 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           transition: 'transform 0.2s ease-out',
         }}
       >
-        {/* Fine holographic line pattern (diagonal lines like real cards) */}
+        {/* Fine holographic line pattern (diagonal lines like real cards) - more subtle */}
         <div 
           className="absolute inset-0 z-10" 
           style={{
-            backgroundImage: 'repeating-linear-gradient(95deg, transparent, transparent 2px, rgba(255,255,255,0.15) 2px, rgba(255,255,255,0.15) 4px)',
-            backgroundSize: '8px 100%',
-            opacity: 0.8,
-          }}
-        />
-        
-        {/* Cross-hatched pattern overlay for authentic foil look */}
-        <div 
-          className="absolute inset-0 z-15" 
-          style={{
-            backgroundImage: 'repeating-linear-gradient(to right, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 6px), repeating-linear-gradient(to bottom, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 6px)',
-            backgroundSize: '6px 6px',
-            opacity: 0.7,
+            backgroundImage: 'repeating-linear-gradient(95deg, transparent, transparent 3px, rgba(255,255,255,0.05) 3px, rgba(255,255,255,0.05) 6px)',
+            backgroundSize: '12px 100%',
+            opacity: 0.5,
           }}
         />
 
-        {/* Fine holographic pattern only - no color tint */}
-        <div 
-          className="absolute inset-0 z-20 transition-opacity duration-200" 
-          style={{
-            background: `linear-gradient(${coords.x/5}deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2))`,
-            opacity: isActive ? 0.3 : 0.1,
-            mixBlendMode: 'overlay',
-          }}
-        />
-        
-        {/* Dynamic light reflection that follows pointer/touch - more subtle */}
+        {/* Dynamic light reflection that follows pointer/touch - very subtle */}
         <div 
           className="absolute inset-0 z-25 transition-opacity duration-200"
           style={{
             background: `
               radial-gradient(circle at ${coords.x}% ${coords.y}%, 
-              rgba(255, 255, 255, 0.7) 0%, 
-              rgba(255, 255, 255, 0.2) 15%, 
-              rgba(255, 255, 255, 0.05) 30%,
-              transparent 60%)
+              rgba(255, 255, 255, 0.5) 0%, 
+              rgba(255, 255, 255, 0.1) 20%, 
+              transparent 50%)
             `,
-            opacity: isActive ? 0.5 : 0.2,
+            opacity: isActive ? 0.4 : 0.1,
             mixBlendMode: 'screen',
           }}
         />
         
-        {/* Animated rainbow effect */}
-        <motion.div 
-          className="absolute inset-0 z-30"
-          style={{ 
-            backgroundSize: '400% 400%',
-            opacity: isActive ? 0.3 : 0.1,
-            mixBlendMode: 'color-dodge',
-          }}
-          animate={{
-            backgroundPosition: ['0% 0%', '100% 100%']
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            repeatType: 'mirror'
-          }}
-        />
-        
-        {/* Sharp horizontal light sweep that moves with tilt - more subtle */}
+        {/* Extremely subtle light sweep that moves with tilt */}
         <div 
           className="absolute inset-0 z-35 transition-all duration-150" 
           style={{
@@ -183,16 +144,16 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
                 ${90 + (rotateY * 2)}deg,
                 transparent 0%,
                 transparent ${40 - (rotateX * 2)}%,
-                rgba(255, 255, 255, 0.6) 45%,
-                rgba(255, 255, 255, 0.8) 50%,
-                rgba(255, 255, 255, 0.6) 55%,
+                rgba(255, 255, 255, 0.2) 45%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0.2) 55%,
                 transparent ${60 + (rotateX * 2)}%,
                 transparent 100%
               )
             `,
-            opacity: isActive ? 0.6 : 0.2,
+            opacity: isActive ? 0.3 : 0.1,
             mixBlendMode: 'overlay',
-            transform: `translateY(${rotateX}px)`,
+            transform: `translateY(${rotateX/2}px)`,
           }}
         />
         
