@@ -29,9 +29,9 @@ export default function HolographicCard({
   const rarityLevel = calculateCardRarity(card);
   const intensityFactor = rarityLevel / 6; // Normalize to 0-1 range
   
-  // Transforms for 3D rotation - more dramatic tilt for authentic TCG feel
-  const rotateX = useTransform(y, [-300, 300], [25, -25]);
-  const rotateY = useTransform(x, [-300, 300], [-25, 25]);
+  // Transforms for 3D rotation - authentic Pokémon TCG feel
+  const rotateX = useTransform(y, [-300, 300], [15, -15]);
+  const rotateY = useTransform(x, [-300, 300], [-15, 15]);
   
   // Apply spring physics for smooth animation - adjust based on rarity
   const springStiffness = 150 - (rarityLevel * 15); // Higher rarity = softer springs
@@ -57,8 +57,8 @@ export default function HolographicCard({
   );
   
   // Make sure we have valid card properties
-  const cardType = card?.type || 'normal';
-  const cardRarity = card?.rarity || 'Common';
+  const cardType = card?.type || 'psychic';
+  const cardRarity = card?.rarity || 'Rare';
   
   // State for hover detection
   const [isHovering, setIsHovering] = useState(false);
@@ -187,62 +187,61 @@ export default function HolographicCard({
             background: `linear-gradient(
               ${shineX}deg, 
               transparent 0%, 
-              ${typeColor}11 20%, 
-              ${typeColor}44 40%, 
-              ${typeColor}88 50%, 
-              ${typeColor}44 60%, 
-              ${typeColor}11 80%,
+              rgba(255, 255, 255, 0.1) 30%, 
+              rgba(255, 255, 255, 0.5) 48%, 
+              rgba(255, 255, 255, 0.6) 50%, 
+              rgba(255, 255, 255, 0.5) 52%, 
+              rgba(255, 255, 255, 0.1) 70%,
               transparent 100%
             )`,
-            filter: `hue-rotate(${hueRotate}deg) brightness(1.5)`,
-            opacity: 0.4 + (0.6 * intensityFactor),
-            boxShadow: `inset 0 0 ${40 * intensityFactor}px rgba(255, 255, 255, 0.9)`,
+            filter: `hue-rotate(${hueRotate}deg)`,
+            opacity: 0.7,
+            mixBlendMode: 'color-dodge',
           }}
         />
         
-        {/* Secondary holographic pattern - subtle pattern */}
+        {/* Pokémon card foil pattern - horizontal lines */}
         <motion.div 
           className="absolute inset-0 z-11 mix-blend-overlay pointer-events-none"
           style={{
-            backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+')",
-            backgroundSize: "4px 4px",
-            opacity: rarityLevel > 2 ? 0.2 * intensityFactor : 0,
+            backgroundImage: `repeating-linear-gradient(
+              0deg,
+              rgba(255, 255, 255, 0.1),
+              rgba(255, 255, 255, 0.1) 1px,
+              transparent 1px,
+              transparent 4px
+            )`,
+            opacity: 0.5,
           }}
         />
         
-        {/* Rainbow effect for rare cards - more dynamic and vibrant */}
-        {rarityLevel > 3 && (
-          <motion.div 
-            className="absolute inset-0 z-12 mix-blend-color-dodge pointer-events-none"
-            style={{
-              background: "linear-gradient(45deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff)",
-              backgroundSize: "400% 400%",
-              opacity: 0.15 + (0.25 * (rarityLevel - 3) / 3),
-              filter: `hue-rotate(${hueRotate}deg) contrast(1.2)`,
-            }}
-            animate={{
-              backgroundPosition: ["0% 0%", "100% 100%"],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              repeatType: "mirror",
-            }}
-          />
-        )}
+        {/* Pokémon card holographic sparkle effect */}
+        <motion.div 
+          className="absolute inset-0 z-12 mix-blend-screen pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255, 255, 255, 0.8) 0%, transparent 50%)`,
+            opacity: 0.5,
+          }}
+        />
         
-        {/* Ultra Rare specific foil texture */}
-        {rarityLevel > 4 && (
-          <motion.div 
-            className="absolute inset-0 z-13 mix-blend-overlay pointer-events-none"
-            style={{
-              backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PC9yZWN0Pgo8cGF0aCBkPSJNMCwwIEwyMCwyMCBNMjAsMCBMMCwyMCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjAuNSIgb3BhY2l0eT0iMC4zIj48L3BhdGg+Cjwvc3ZnPg==')",
-              backgroundSize: "10px 10px",
-              opacity: 0.4,
-              filter: `hue-rotate(${hueRotate}deg) brightness(2)`,
-            }}
-          />
-        )}
+        {/* Rainbow color refraction - classic Pokémon holofoil */}
+        <motion.div 
+          className="absolute inset-0 z-13 mix-blend-color-dodge pointer-events-none overflow-hidden"
+          style={{
+            background: "linear-gradient(45deg, rgba(255,0,0,0.3), rgba(255,255,0,0.3), rgba(0,255,0,0.3), rgba(0,255,255,0.3), rgba(0,0,255,0.3), rgba(255,0,255,0.3))",
+            backgroundSize: "600% 600%",
+            opacity: 0.4,
+            filter: `brightness(1.5)`,
+          }}
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 100%"],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            repeatType: "mirror",
+          }}
+        />
         
         {/* Card content */}
         <div className="relative z-20 bg-white dark:bg-gray-800 h-full rounded-lg overflow-hidden">

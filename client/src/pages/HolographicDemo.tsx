@@ -76,16 +76,13 @@ export default function HolographicDemo() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-            {filteredCards.slice(0, 12).map((card) => (
-              <div key={card.id} className="flex flex-col items-center">
-                <HolographicCard 
-                  card={card} 
-                  className="w-full h-64 mb-2"
-                />
-
-              </div>
-            ))}
+          <div className="flex justify-center items-center min-h-[500px]">
+            {filteredCards.length > 0 && (
+              <HolographicCard 
+                card={filteredCards[0]} 
+                className="w-[280px] h-[390px]"
+              />
+            )}
           </div>
         )}
 
