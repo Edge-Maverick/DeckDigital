@@ -71,7 +71,7 @@ export default function CardDetailModal({ card, isOpen, onClose }: CardDetailMod
               alt={card.name} 
               className="w-full object-cover"
               onError={(e) => {
-                e.currentTarget.src = `https://via.placeholder.com/300x400/FF6B6B/FFFFFF?text=${encodeURIComponent(card.name)}`;
+                e.currentTarget.src = `https://via.placeholder.com/300x400/FF6B6B/FFFFFF.png?text=${encodeURIComponent(card.name)}`;
               }}
             />
           </div>
