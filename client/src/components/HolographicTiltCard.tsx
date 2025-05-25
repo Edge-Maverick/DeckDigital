@@ -19,45 +19,6 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
   const [isLoaded, setIsLoaded] = useState(false);
   const isMobile = useIsMobile();
   
-  // Colors for different card types
-  const cardColors = {
-    psychic: {
-      primary: 'rgba(214, 133, 219, 0.9)',
-      highlight: 'rgba(252, 200, 254, 1)',
-      accent: 'rgba(163, 97, 168, 1)',
-    },
-    fire: {
-      primary: 'rgba(240, 128, 48, 0.9)',
-      highlight: 'rgba(255, 200, 100, 1)',
-      accent: 'rgba(200, 80, 40, 1)',
-    },
-    water: {
-      primary: 'rgba(104, 144, 240, 0.9)',
-      highlight: 'rgba(130, 200, 255, 1)',
-      accent: 'rgba(40, 100, 180, 1)',
-    },
-    // Default fallback
-    default: {
-      primary: 'rgba(180, 180, 180, 0.9)',
-      highlight: 'rgba(230, 230, 230, 1)',
-      accent: 'rgba(120, 120, 120, 1)',
-    },
-  };
-  
-  // Get the color scheme based on card type
-  const getCardColorScheme = () => {
-    if (!card.type) return cardColors.default;
-    
-    const type = card.type.toLowerCase();
-    if (type.includes('psychic')) return cardColors.psychic;
-    if (type.includes('fire')) return cardColors.fire;
-    if (type.includes('water')) return cardColors.water;
-    
-    return cardColors.default;
-  };
-  
-  const colorScheme = getCardColorScheme();
-  
   // Update tilt values based on mouse/touch position
   const updateTilt = (clientX: number, clientY: number) => {
     if (!cardRef.current) return;
@@ -169,41 +130,39 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           }}
         />
 
-        {/* Type-specific color gradient (e.g., psychic purple for Alakazam) */}
+        {/* Fine holographic pattern only - no color tint */}
         <div 
           className="absolute inset-0 z-20 transition-opacity duration-200" 
           style={{
-            background: `radial-gradient(ellipse at ${coords.x}% ${coords.y}%, ${colorScheme.highlight} 0%, ${colorScheme.primary} 40%, ${colorScheme.accent} 80%)`,
-            opacity: isActive ? 0.4 : 0.2,
-            mixBlendMode: 'color-dodge',
+            background: `linear-gradient(${coords.x/5}deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2))`,
+            opacity: isActive ? 0.3 : 0.1,
+            mixBlendMode: 'overlay',
           }}
         />
         
-        {/* Dynamic light reflection that follows pointer/touch */}
+        {/* Dynamic light reflection that follows pointer/touch - more subtle */}
         <div 
           className="absolute inset-0 z-25 transition-opacity duration-200"
           style={{
             background: `
               radial-gradient(circle at ${coords.x}% ${coords.y}%, 
-              rgba(255, 255, 255, 0.9) 0%, 
-              rgba(255, 255, 255, 0.3) 15%, 
-              rgba(255, 255, 255, 0.1) 30%,
+              rgba(255, 255, 255, 0.7) 0%, 
+              rgba(255, 255, 255, 0.2) 15%, 
+              rgba(255, 255, 255, 0.05) 30%,
               transparent 60%)
             `,
-            opacity: isActive ? 0.7 : 0.3,
+            opacity: isActive ? 0.5 : 0.2,
             mixBlendMode: 'screen',
           }}
         />
         
-        {/* Rainbow prism effect - animated - more subtle */}
+        {/* Animated rainbow effect */}
         <motion.div 
-          className="absolute inset-0 z-30" 
-          style={{
-            background: 'linear-gradient(45deg, rgba(255,0,0,0.15), rgba(255,165,0,0.15), rgba(255,255,0,0.15), rgba(0,255,0,0.15), rgba(0,255,255,0.15), rgba(0,0,255,0.15), rgba(128,0,128,0.15))',
+          className="absolute inset-0 z-30"
+          style={{ 
             backgroundSize: '400% 400%',
-            opacity: isActive ? 0.4 : 0.2,
+            opacity: isActive ? 0.3 : 0.1,
             mixBlendMode: 'color-dodge',
-            filter: 'contrast(1.3) saturate(1.3)',
           }}
           animate={{
             backgroundPosition: ['0% 0%', '100% 100%']
@@ -236,32 +195,6 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
             transform: `translateY(${rotateX}px)`,
           }}
         />
-        
-        {/* Sparkle effects like on real holos */}
-        <div className="absolute inset-0 z-40 overflow-hidden">
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                opacity: 0,
-                filter: 'blur(0.5px)',
-              }}
-              animate={{
-                opacity: [0, 1, 0],
-                scale: [0, 1.5, 0],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                delay: Math.random() * 5,
-                repeatDelay: Math.random() * 8,
-              }}
-            />
-          ))}
-        </div>
         
         {/* Card content */}
         <div className="absolute inset-0 z-45">
