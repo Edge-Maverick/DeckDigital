@@ -29,9 +29,9 @@ export default function HolographicCard({
   const rarityLevel = calculateCardRarity(card);
   const intensityFactor = rarityLevel / 6; // Normalize to 0-1 range
   
-  // Transforms for 3D rotation
-  const rotateX = useTransform(y, [-300, 300], [15, -15]);
-  const rotateY = useTransform(x, [-300, 300], [-15, 15]);
+  // Transforms for 3D rotation - more dramatic tilt for authentic TCG feel
+  const rotateX = useTransform(y, [-300, 300], [25, -25]);
+  const rotateY = useTransform(x, [-300, 300], [-25, 25]);
   
   // Apply spring physics for smooth animation - adjust based on rarity
   const springStiffness = 150 - (rarityLevel * 15); // Higher rarity = softer springs
@@ -147,42 +147,66 @@ export default function HolographicCard({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.98 }}
       >
-        {/* Holographic overlay */}
-        {rarityLevel > 2 && (
-          <motion.div 
-            className="absolute inset-0 z-10 mix-blend-overlay pointer-events-none"
-            style={{
-              background: `linear-gradient(
-                ${shineX}deg, 
-                transparent 20%, 
-                ${typeColor}22 40%, 
-                ${typeColor}44 50%, 
-                ${typeColor}22 60%, 
-                transparent 80%
-              )`,
-              filter: `hue-rotate(${hueRotate}deg)`,
-              opacity: 0.6 * intensityFactor,
-            }}
-          />
-        )}
+        {/* Primary holographic overlay - dynamic lighting effect */}
+        <motion.div 
+          className="absolute inset-0 z-10 mix-blend-overlay pointer-events-none"
+          style={{
+            background: `linear-gradient(
+              ${shineX}deg, 
+              transparent 0%, 
+              ${typeColor}11 20%, 
+              ${typeColor}44 40%, 
+              ${typeColor}88 50%, 
+              ${typeColor}44 60%, 
+              ${typeColor}11 80%,
+              transparent 100%
+            )`,
+            filter: `hue-rotate(${hueRotate}deg) brightness(1.5)`,
+            opacity: 0.4 + (0.6 * intensityFactor),
+            boxShadow: `inset 0 0 ${40 * intensityFactor}px rgba(255, 255, 255, 0.9)`,
+          }}
+        />
         
-        {/* Rainbow effect for rare cards */}
-        {rarityLevel > 4 && (
+        {/* Secondary holographic pattern - subtle pattern */}
+        <motion.div 
+          className="absolute inset-0 z-11 mix-blend-overlay pointer-events-none"
+          style={{
+            backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+')",
+            backgroundSize: "4px 4px",
+            opacity: rarityLevel > 2 ? 0.2 * intensityFactor : 0,
+          }}
+        />
+        
+        {/* Rainbow effect for rare cards - more dynamic and vibrant */}
+        {rarityLevel > 3 && (
           <motion.div 
-            className="absolute inset-0 z-10 mix-blend-color-dodge pointer-events-none"
+            className="absolute inset-0 z-12 mix-blend-color-dodge pointer-events-none"
             style={{
               background: "linear-gradient(45deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff)",
-              backgroundSize: "200% 200%",
-              opacity: 0.2 * intensityFactor,
-              filter: `hue-rotate(${hueRotate}deg)`,
+              backgroundSize: "400% 400%",
+              opacity: 0.15 + (0.25 * (rarityLevel - 3) / 3),
+              filter: `hue-rotate(${hueRotate}deg) contrast(1.2)`,
             }}
             animate={{
               backgroundPosition: ["0% 0%", "100% 100%"],
             }}
             transition={{
-              duration: 5,
+              duration: 3,
               repeat: Infinity,
               repeatType: "mirror",
+            }}
+          />
+        )}
+        
+        {/* Ultra Rare specific foil texture */}
+        {rarityLevel > 4 && (
+          <motion.div 
+            className="absolute inset-0 z-13 mix-blend-overlay pointer-events-none"
+            style={{
+              backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PC9yZWN0Pgo8cGF0aCBkPSJNMCwwIEwyMCwyMCBNMjAsMCBMMCwyMCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjAuNSIgb3BhY2l0eT0iMC4zIj48L3BhdGg+Cjwvc3ZnPg==')",
+              backgroundSize: "10px 10px",
+              opacity: 0.4,
+              filter: `hue-rotate(${hueRotate}deg) brightness(2)`,
             }}
           />
         )}
