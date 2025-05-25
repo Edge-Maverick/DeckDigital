@@ -171,25 +171,11 @@ export class MemStorage implements IStorage {
   }
   
   private mapTCGdexCardToInsertCard(tcgdexCard: TCGdexCard): InsertCard {
-    // Transform the image URL to use the updated domain format
-    let imageUrl = tcgdexCard.image || "";
-    
-    // Check if image URL contains the old domain and update it
-    if (imageUrl && imageUrl.includes('assets.tcgdex.net')) {
-      // Replace the old domain with the new one
-      imageUrl = imageUrl.replace('assets.tcgdex.net', 'tcgdex.dev/assets');
-    }
-    
-    // Use placeholder if no image is available
-    if (!imageUrl) {
-      imageUrl = "https://via.placeholder.com/300x400?text=Card+Image";
-    }
-    
     return {
       cardId: tcgdexCard.id,
       name: tcgdexCard.name.en,
       number: tcgdexCard.number,
-      image: imageUrl,
+      image: tcgdexCard.image || "https://via.placeholder.com/300x400?text=Card+Image",
       type: tcgdexCard.types?.[0] || "Normal",
       rarity: tcgdexCard.rarity || "Common",
       set: tcgdexCard.set?.name?.en || "Base Set",
