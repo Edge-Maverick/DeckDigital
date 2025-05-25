@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 247 247 247; /* #F7F7F7 */
+  --foreground: 44 58 80; /* #2C3E50 */
+  --muted: 230 230 230; /* #E6E6E6 */
+  --muted-foreground: 100 116 139; /* #64748B */
+  --popover: 255 255 255; /* #FFFFFF */
+  --popover-foreground: 44 58 80; /* #2C3E50 */
+  --card: 255 255 255; /* #FFFFFF */
+  --card-foreground: 44 58 80; /* #2C3E50 */
+  --border: 220 220 220; /* #DCDCDC */
+  --input: 220 220 220; /* #DCDCDC */
+  --primary: 255 107 107; /* #FF6B6B */
+  --primary-foreground: 255 255 255; /* #FFFFFF */
+  --secondary: 78 205 196; /* #4ECDC4 */
+  --secondary-foreground: 255 255 255; /* #FFFFFF */
+  --accent: 255 230 109; /* #FFE66D */
+  --accent-foreground: 44 58 80; /* #2C3E50 */
+  --destructive: 239 68 68; /* #EF4444 */
+  --destructive-foreground: 255 255 255; /* #FFFFFF */
+  --ring: 78 205 196; /* #4ECDC4 */
+  --radius: 0.5rem;
+  
+  /* Card Type Colors */
+  --type-normal: 168 167 122; /* #A8A77A */
+  --type-fire: 238 129 48; /* #EE8130 */
+  --type-water: 99 144 240; /* #6390F0 */
+  --type-electric: 247 208 44; /* #F7D02C */
+  --type-grass: 122 199 76; /* #7AC84C */
+  --type-ice: 150 217 214; /* #96D9D6 */
+  --type-fighting: 194 46 40; /* #C22E28 */
+  --type-poison: 163 62 161; /* #A33EA1 */
+  --type-ground: 226 191 101; /* #E2BF65 */
+  --type-flying: 169 143 243; /* #A98FF3 */
+  --type-psychic: 249 85 135; /* #F95587 */
+  --type-bug: 166 185 26; /* #A6B91A */
+  --type-rock: 182 161 54; /* #B6A136 */
+  --type-ghost: 115 87 151; /* #735797 */
+  --type-dragon: 111 53 252; /* #6F35FC */
+  --type-dark: 112 87 70; /* #705746 */
+  --type-steel: 183 183 206; /* #B7B7CE */
+  --type-fairy: 214 133 173; /* #D685AD */
+}
+  
+.dark {
+  --background: 36 41 51; /* #242933 */
+  --foreground: 247 247 247; /* #F7F7F7 */
+  --muted: 55 65 81; /* #374151 */
+  --muted-foreground: 156 163 175; /* #9CA3AF */
+  --popover: 47 53 66; /* #2F3542 */
+  --popover-foreground: 247 247 247; /* #F7F7F7 */
+  --card: 47 53 66; /* #2F3542 */
+  --card-foreground: 247 247 247; /* #F7F7F7 */
+  --border: 75 85 99; /* #4B5563 */
+  --input: 75 85 99; /* #4B5563 */
+  --primary: 255 107 107; /* #FF6B6B */
+  --primary-foreground: 255 255 255; /* #FFFFFF */
+  --secondary: 78 205 196; /* #4ECDC4 */
+  --secondary-foreground: 255 255 255; /* #FFFFFF */
+  --accent: 255 230 109; /* #FFE66D */
+  --accent-foreground: 44 58 80; /* #2C3E50 */
+  --destructive: 248 114 114; /* #F87272 */
+  --destructive-foreground: 255 255 255; /* #FFFFFF */
+  --ring: 78 205 196; /* #4ECDC4 */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-montserrat;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-poppins font-semibold;
+  }
+}
+
+/* Card animation classes */
+.card-container {
+  perspective: 1000px;
+}
+
+.card {
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.card.flipped .card-back {
+  transform: rotateY(180deg);
+}
+
+.card.flipped .card-front {
+  transform: rotateY(0deg);
+}
+
+.card-back {
+  backface-visibility: hidden;
+  transform: rotateY(0deg);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.card-front {
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animations */
+@keyframes flip {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(180deg); }
+}
+
+@keyframes reveal {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-flip {
+  animation: flip 1.5s ease-in-out forwards;
+}
+
+.animate-reveal {
+  animation: reveal 0.7s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Touch ripple effect */
+.touch-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.touch-ripple:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform .5s, opacity 1s;
+}
+
+.touch-ripple:active:after {
+  transform: scale(0, 0);
+  opacity: .3;
+  transition: 0s;
+}
