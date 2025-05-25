@@ -119,7 +119,7 @@ export class MemStorage implements IStorage {
         name: "Base Set Pack",
         description: "5 random cards with at least one rare.",
         price: 500,
-        image: "https://assets.tcgdex.net/en/base/packs/base1/high.webp",
+        image: "https://assets.tcgdex.net/en/base/packs/base1/high.jpg",
         cardsPerPack: 5
       },
       {
@@ -127,7 +127,7 @@ export class MemStorage implements IStorage {
         name: "Sword & Shield Pack",
         description: "5 random cards with guaranteed ultra-rare.",
         price: 1000,
-        image: "https://assets.tcgdex.net/en/swsh/packs/swsh1/high.webp",
+        image: "https://assets.tcgdex.net/en/swsh/packs/swsh1/high.jpg",
         cardsPerPack: 5
       },
       {
@@ -135,7 +135,7 @@ export class MemStorage implements IStorage {
         name: "Cosmic Eclipse",
         description: "Discover rare cosmic variants and holographic cards in this limited edition pack.",
         price: 1200,
-        image: "https://assets.tcgdex.net/en/sm/packs/sm12/high.webp",
+        image: "https://assets.tcgdex.net/en/sm/packs/sm12/high.jpg",
         cardsPerPack: 5
       }
     ];
@@ -312,7 +312,7 @@ export class MemStorage implements IStorage {
     };
   }
   
-  // Format TCGdex image URLs to use high quality and WebP format
+  // Format TCGdex image URLs to use high quality and JPG format
   private formatTCGdexImageUrl(imageUrl: string, cardId?: string): string {
     if (imageUrl && imageUrl.includes('assets.tcgdex.net')) {
       // Extract card number from the cardId if available (format: "set-number")
@@ -343,7 +343,7 @@ export class MemStorage implements IStorage {
       }
       
       // Add the quality and format
-      return `${baseUrlParts.join('/')}/high.webp`;
+      return `${baseUrlParts.join('/')}/high.jpg`;
     }
     return imageUrl;
   }
