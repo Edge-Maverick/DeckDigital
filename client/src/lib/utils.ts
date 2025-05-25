@@ -67,6 +67,72 @@ export function calculateCardRarity(card: any): number {
   return 1; // Default to common
 }
 
+export function getCardTexture(rarityLevel: number): string {
+  // Return different texture patterns based on rarity level
+  switch (rarityLevel) {
+    case 1: // Common
+      return `
+        repeating-linear-gradient(
+          45deg,
+          rgba(0, 0, 0, 0.03),
+          rgba(0, 0, 0, 0.03) 1px,
+          transparent 1px,
+          transparent 10px
+        )
+      `; // Matte finish
+    case 2: // Uncommon
+      return `
+        linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0.05) 0%,
+          rgba(255, 255, 255, 0.1) 50%,
+          rgba(255, 255, 255, 0.05) 100%
+        )
+      `; // Glossy finish
+    case 3: // Rare
+      return `
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.07) 2px,
+          rgba(255, 255, 255, 0.04) 2px,
+          rgba(255, 255, 255, 0.04) 4px
+        )
+      `; // Linen texture
+    case 4: // Rare Holo
+      return `
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255, 255, 255, 0),
+          rgba(255, 255, 255, 0.1) 1px,
+          rgba(255, 255, 255, 0) 2px,
+          rgba(255, 255, 255, 0) 6px
+        )
+      `; // Silk texture
+    case 5: // Ultra Rare
+      return `
+        radial-gradient(
+          circle at 50% 50%,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0.05) 30%,
+          rgba(255, 255, 255, 0.1) 60%,
+          rgba(255, 255, 255, 0.05) 100%
+        )
+      `; // Brushed metal texture
+    case 6: // Secret Rare
+      return `
+        repeating-conic-gradient(
+          rgba(255, 255, 255, 0.2) 0deg 5deg,
+          rgba(255, 255, 255, 0.1) 5deg 10deg,
+          rgba(255, 255, 255, 0.05) 10deg 15deg,
+          rgba(255, 255, 255, 0) 15deg 20deg
+        )
+      `; // Etched foil texture
+    default:
+      return ''; // No texture
+  }
+}
+
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number

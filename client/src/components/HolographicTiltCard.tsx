@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card as CardType } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn, calculateCardRarity, getCardTypeColor, getCardTexture } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { getCardTypeColor } from '@/lib/utils';
 
 interface HolographicTiltCardProps {
   card: CardType;
@@ -21,6 +20,7 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
   const [isLoaded, setIsLoaded] = useState(false);
   const isMobile = useIsMobile();
   const typeColor = card.type ? getCardTypeColor(card.type) : 'rgb(168, 167, 122)'; // Default to normal type
+  const rarityLevel = calculateCardRarity(card);
   
   // Create automatic subtle animation effect
   useEffect(() => {

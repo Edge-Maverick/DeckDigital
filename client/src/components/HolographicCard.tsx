@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, useMotionValue, useTransform, useSpring, useAnimation } from "framer-motion";
 import { Card as CardType } from "@/lib/types";
-import { cn, calculateCardRarity, getCardTypeColor } from "@/lib/utils";
+import { cn, calculateCardRarity, getCardTypeColor, getCardTexture } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -327,6 +327,21 @@ export default function HolographicCard({
           }}
         />
         
+        {/* Card texture overlay - based on rarity */}
+        <motion.div 
+          className="absolute inset-0 z-20 pointer-events-none mix-blend-overlay"
+          style={{
+            backgroundImage: getCardTexture(rarityLevel),
+            opacity: isHovering ? 0.8 : 0.5,
+          }}
+          animate={{
+            opacity: isHovering ? [0.5, 0.8] : 0.5
+          }}
+          transition={{
+            duration: 0.4
+          }}
+        />
+        
         {/* Card content */}
         <div className="relative z-20 bg-white dark:bg-gray-800 h-full rounded-lg">
           {/* Card image - full size with no details */}
@@ -353,7 +368,15 @@ export default function HolographicCard({
               />
             )}
             
-            {/* Removed rarity indicator circle */}
+            {/* Texture indicator in corner based on rarity */}
+            <div className="absolute bottom-1 right-1 z-30 text-xs font-bold opacity-70">
+              {rarityLevel === 1 && <span className="text-gray-400">MATTE</span>}
+              {rarityLevel === 2 && <span className="text-gray-300">GLOSSY</span>}
+              {rarityLevel === 3 && <span className="text-blue-300">LINEN</span>}
+              {rarityLevel === 4 && <span className="text-purple-300">SILK</span>}
+              {rarityLevel === 5 && <span className="text-amber-300">METAL</span>}
+              {rarityLevel === 6 && <span className="text-pink-300">ETCHED</span>}
+            </div>
           </div>
         </div>
       </motion.div>
