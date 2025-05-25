@@ -215,12 +215,34 @@ export default function HolographicCard({
           }}
         />
         
-        {/* Pokémon card holographic sparkle effect */}
+        {/* Pokémon card holographic sparkle effect - enhanced dynamic lighting */}
         <motion.div 
           className="absolute inset-0 z-12 mix-blend-screen pointer-events-none"
           style={{
-            backgroundImage: `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255, 255, 255, 0.8) 0%, transparent 50%)`,
-            opacity: 0.5,
+            backgroundImage: `
+              radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255, 255, 255, 0.9) 0%, transparent 40%),
+              radial-gradient(circle at ${100 - shineX.get()}% ${100 - shineY.get()}%, rgba(255, 255, 255, 0.5) 0%, transparent 30%)
+            `,
+            opacity: 0.7,
+            boxShadow: `inset 0 0 30px rgba(255, 255, 255, 0.5)`,
+          }}
+        />
+        
+        {/* Additional light reflection */}
+        <motion.div 
+          className="absolute inset-0 z-14 mix-blend-overlay pointer-events-none"
+          style={{
+            background: `linear-gradient(
+              ${shineX.get() - 50}deg,
+              transparent 0%,
+              rgba(255, 255, 255, 0.2) 40%,
+              rgba(255, 255, 255, 0.6) 49%,
+              rgba(255, 255, 255, 0.7) 50%,
+              rgba(255, 255, 255, 0.6) 51%,
+              rgba(255, 255, 255, 0.2) 60%,
+              transparent 100%
+            )`,
+            opacity: 0.6,
           }}
         />
         
