@@ -219,16 +219,17 @@ export default function CardReveal({ cards }: CardRevealProps) {
                 </div>
               </div>
               <div className="card-front bg-white dark:bg-gray-800 p-2">
-                <img 
-                  src={currentCard.image} 
-                  alt={currentCard.name} 
-                  className="w-full h-full object-contain rounded"
-                  onError={(e) => {
-                    console.error(`Failed to load image for card: ${currentCard.name}`);
-                    // Remove the image element if loading fails
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
+                <div className="w-full h-full flex items-center justify-center">
+                  <img 
+                    src={currentCard.image} 
+                    alt={currentCard.name} 
+                    className="max-w-full max-h-full object-contain rounded"
+                    onError={(e) => {
+                      console.error(`Failed to load image for card: ${currentCard.name}`);
+                      e.currentTarget.src = 'https://via.placeholder.com/300x420?text=Card+Image+Unavailable';
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </motion.div>
