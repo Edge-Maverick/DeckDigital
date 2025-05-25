@@ -45,13 +45,13 @@ interface NavItemProps {
 function NavItem({ icon, label, path, isActive }: NavItemProps) {
   return (
     <Link href={path}>
-      <a className={cn(
-        "flex flex-col items-center py-2 px-4 min-w-[64px] min-h-[64px] touch-ripple",
+      <div className={cn(
+        "flex flex-col items-center py-2 px-4 min-w-[64px] min-h-[64px] touch-ripple cursor-pointer",
         isActive ? "text-primary" : "text-gray-500 dark:text-gray-400"
       )}>
         {icon}
         <span className="text-xs">{label}</span>
-      </a>
+      </div>
     </Link>
   );
 }

@@ -35,7 +35,7 @@ export default function OpenPackPage() {
     try {
       // Simulate pack opening with a short delay
       setTimeout(async () => {
-        const openedCards = await openPack(currentPack.id);
+        const openedCards = await openPack(currentPack.packId);
         setCards(openedCards);
         setPackOpened(true);
         setIsOpening(false);
