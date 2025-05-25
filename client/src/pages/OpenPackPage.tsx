@@ -15,15 +15,15 @@ export default function OpenPackPage() {
   
   const { data: packs, isLoading: isLoadingPacks } = usePacks();
   
-  // Default to the first pack or use a placeholder if no packs data
+  // Default to the first pack or use a TCGdex asset if no packs data
   const currentPack: PackType = packs && packs.length > 0 
     ? packs[0] 
     : {
         id: "premium",
-        name: "Premium Pack",
+        name: "Sword & Shield Pack",
         description: "Contains 5 random cards with guaranteed ultra-rare.",
         price: 1000,
-        image: "https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200&q=80",
+        image: "https://assets.tcgdex.net/en/swsh/swsh1/booster/high.png",
         cardsPerPack: 5
       };
   
@@ -35,7 +35,7 @@ export default function OpenPackPage() {
     try {
       // Simulate pack opening with a short delay
       setTimeout(async () => {
-        const openedCards = await openPack(currentPack.packId);
+        const openedCards = await openPack(currentPack.id);
         setCards(openedCards);
         setPackOpened(true);
         setIsOpening(false);

@@ -18,7 +18,11 @@ export function CardPack({ pack, onBuy }: CardPackProps) {
       <img 
         src={pack.image} 
         alt={pack.name} 
-        className="w-full h-32 object-cover"
+        className="w-full h-32 object-contain"
+        onError={(e) => {
+          console.error(`Failed to load image for pack: ${pack.name}`);
+          e.currentTarget.style.display = 'none';
+        }}
       />
       <div className="p-4 flex-grow flex flex-col">
         <h3 className="font-poppins font-medium text-lg mb-1">{pack.name}</h3>
@@ -52,7 +56,11 @@ export function FeaturedPack({ pack, onBuy }: FeaturedPackProps) {
       <img 
         src={pack.image} 
         alt={`Featured card pack: ${pack.name}`} 
-        className="w-full h-48 object-cover"
+        className="w-full h-48 object-contain"
+        onError={(e) => {
+          console.error(`Failed to load image for featured pack: ${pack.name}`);
+          e.currentTarget.style.display = 'none';
+        }}
       />
       <div className="p-4">
         <h3 className="font-poppins font-semibold text-xl mb-2">Featured Pack: {pack.name}</h3>
@@ -91,7 +99,11 @@ export function UnOpenedPack({ pack, onOpen }: UnOpenedPackProps) {
       <img 
         src={pack.image} 
         alt={`Unopened ${pack.name}`} 
-        className="w-full h-full object-cover rounded-xl"
+        className="w-full h-full object-contain rounded-xl"
+        onError={(e) => {
+          console.error(`Failed to load image for unopened pack: ${pack.name}`);
+          e.currentTarget.style.display = 'none';
+        }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 rounded-xl"></div>
       <div className="absolute bottom-0 left-0 right-0 p-4 text-white text-center">
