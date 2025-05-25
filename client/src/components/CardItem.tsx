@@ -24,9 +24,13 @@ export default function CardItem({ card, onClick, className }: CardItemProps) {
         <img 
           src={card.image} 
           alt={card.name} 
-          className="w-full h-40 object-cover"
+          className="w-full h-40 object-contain"
           loading="lazy"
-
+          onError={(e) => {
+            console.error(`Failed to load image for card: ${card.name}`);
+            // Remove the image element if loading fails instead of showing a broken image
+            e.currentTarget.style.display = 'none';
+          }}
         />
         <div className="p-2">
           <p className="font-medium text-sm truncate">{card.name}</p>

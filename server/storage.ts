@@ -112,22 +112,22 @@ export class MemStorage implements IStorage {
     
     await this.createUser(defaultUser);
     
-    // Create default packs
+    // Create default packs with TCGdex assets
     const packs: InsertPack[] = [
       {
         packId: "standard",
-        name: "Standard Pack",
+        name: "Base Set Pack",
         description: "5 random cards with at least one rare.",
         price: 500,
-        image: "https://pixabay.com/get/g25ca5c113887885d1b2175aac99e5c3289a899e31464a173119752798e229f6b76bc730230cd09b61cee5e397dbed51b4b5a8738da10fbff93c050b18ba15861_1280.jpg",
+        image: "https://assets.tcgdex.net/en/base/base1/booster/high.png",
         cardsPerPack: 5
       },
       {
         packId: "premium",
-        name: "Premium Pack",
+        name: "Sword & Shield Pack",
         description: "5 random cards with guaranteed ultra-rare.",
         price: 1000,
-        image: "https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200&q=80",
+        image: "https://assets.tcgdex.net/en/swsh/swsh1/booster/high.png",
         cardsPerPack: 5
       },
       {
@@ -135,7 +135,7 @@ export class MemStorage implements IStorage {
         name: "Cosmic Eclipse",
         description: "Discover rare cosmic variants and holographic cards in this limited edition pack.",
         price: 1200,
-        image: "https://images.unsplash.com/photo-1617854818583-09e7f077a156?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400&q=80",
+        image: "https://assets.tcgdex.net/en/sm/sm12/booster/high.png",
         cardsPerPack: 5
       }
     ];
@@ -157,39 +157,49 @@ export class MemStorage implements IStorage {
         // Process only the first 100 cards to avoid overloading
         const tcgdexCards = response.data.slice(0, 100);
         
+        let successCount = 0;
         for (const tcgdexCard of tcgdexCards) {
-          const card: InsertCard = this.mapTCGdexCardToInsertCard(tcgdexCard);
-          await this.createCard(card);
+          try {
+            // Only process cards with valid TCGdex images
+            if (tcgdexCard.image && tcgdexCard.image.includes('assets.tcgdex.net')) {
+              const card: InsertCard = this.mapTCGdexCardToInsertCard(tcgdexCard);
+              await this.createCard(card);
+              successCount++;
+            }
+          } catch (cardError) {
+            // Skip cards that don't have valid data
+            console.log(`Skipping card due to invalid data: ${tcgdexCard.id || 'unknown'}`);
+          }
         }
+        
+        console.log(`Successfully added ${successCount} cards from TCGdex API`);
       }
     } catch (error) {
       console.error("Failed to prefetch cards from TCGdex API", error);
-      
-      // Fallback to mock cards if API fails
-      await this.createMockCards();
+      // No fallback to mock cards - we only use authentic TCGdex data
     }
   }
   
   private mapTCGdexCardToInsertCard(tcgdexCard: TCGdexCard): InsertCard {
+    // Skip cards without valid TCGdex images
+    if (!tcgdexCard.image || !tcgdexCard.image.includes('assets.tcgdex.net')) {
+      throw new Error("Card does not have a valid TCGdex image");
+    }
+    
     // Format the image URL with high quality and png extension
     // Original format: https://assets.tcgdex.net/en/swsh/swsh3/136/high.png
-    let formattedImageUrl = tcgdexCard.image;
-    
-    // If it's a TCGdex URL, format it to use high quality and png extension
-    if (formattedImageUrl && formattedImageUrl.includes('assets.tcgdex.net')) {
-      // Extract the base path by removing any existing quality/extension
-      const baseUrlParts = formattedImageUrl.split('/');
-      // Remove the last part (which might have quality.extension)
-      baseUrlParts.pop();
-      // Add our specified quality and extension
-      formattedImageUrl = `${baseUrlParts.join('/')}/high.png`;
-    }
+    // Extract the base path by removing any existing quality/extension
+    const baseUrlParts = tcgdexCard.image.split('/');
+    // Remove the last part (which might have quality.extension)
+    baseUrlParts.pop();
+    // Add our specified quality and extension
+    const formattedImageUrl = `${baseUrlParts.join('/')}/high.png`;
     
     return {
       cardId: tcgdexCard.id,
       name: tcgdexCard.name.en,
       number: tcgdexCard.number,
-      image: formattedImageUrl || "https://via.placeholder.com/300x400?text=Card+Image",
+      image: formattedImageUrl,
       type: tcgdexCard.types?.[0] || "Normal",
       rarity: tcgdexCard.rarity || "Common",
       set: tcgdexCard.set?.name?.en || "Base Set",
@@ -200,139 +210,10 @@ export class MemStorage implements IStorage {
   }
   
   private async createMockCards() {
-    const mockCards: InsertCard[] = [
-      {
-        cardId: "charizard",
-        name: "Charizard",
-        number: "006",
-        image: "https://images.unsplash.com/photo-1605979257913-1704eb7b6246?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=400&q=80",
-        type: "Fire",
-        rarity: "Holographic Rare",
-        set: "Base Set",
-        description: "Charizard flies around the sky in search of powerful opponents. It breathes fire of such great heat that it melts anything. However, it never turns its fiery breath on any opponent weaker than itself.",
-        releaseDate: "1999-01-09",
-        abilities: [
-          {
-            name: "Fire Spin",
-            damage: "100",
-            description: "Discard 2 Energy cards attached to Charizard in order to use this attack."
-          }
-        ]
-      },
-      {
-        cardId: "blastoise",
-        name: "Blastoise",
-        number: "009",
-        image: "https://images.unsplash.com/photo-1606041011872-596597976b25?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=400&q=80",
-        type: "Water",
-        rarity: "Holographic Rare",
-        set: "Base Set",
-        description: "A brutal Pokémon with pressurized water jets on its shell. They are used for high-speed tackles.",
-        releaseDate: "1999-01-09",
-        abilities: [
-          {
-            name: "Hydro Pump",
-            damage: "60+",
-            description: "Does 60 damage plus 10 more damage for each Water Energy attached to Blastoise but not used to pay for this attack's Energy cost."
-          }
-        ]
-      },
-      {
-        cardId: "venusaur",
-        name: "Venusaur",
-        number: "003",
-        image: "https://pixabay.com/get/g7518408ed92e8587bb371e5e416d4408283dbb5ac3880c90dd0177a77a1e9fecc896e87a94a53f1dbedec98350f41a4c4133be823e6dffce824d301ab85a7f0e_1280.jpg",
-        type: "Grass",
-        rarity: "Holographic Rare",
-        set: "Base Set",
-        description: "The plant blooms when it is absorbing solar energy. It stays on the move to seek sunlight.",
-        releaseDate: "1999-01-09",
-        abilities: [
-          {
-            name: "Solar Beam",
-            damage: "60",
-            description: "No additional effect."
-          }
-        ]
-      },
-      {
-        cardId: "pikachu",
-        name: "Pikachu",
-        number: "025",
-        image: "https://pixabay.com/get/gb3f779830b568b001471ff10131c643dc5119ec0ff97e8ee58811f1bbe7dbffa9bbc848281b6193153cdfc102f1684f50c41de4a184e85813cbb94d09a4e4722_1280.jpg",
-        type: "Electric",
-        rarity: "Common",
-        set: "Base Set",
-        description: "When several of these Pokémon gather, their electricity could build and cause lightning storms.",
-        releaseDate: "1999-01-09",
-        abilities: [
-          {
-            name: "Thunder Shock",
-            damage: "30",
-            description: "Flip a coin. If heads, the Defending Pokémon is now Paralyzed."
-          }
-        ]
-      },
-      {
-        cardId: "mewtwo",
-        name: "Mewtwo",
-        number: "150",
-        image: "https://images.unsplash.com/photo-1614583224978-f05ce51ef5fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=400&q=80",
-        type: "Psychic",
-        rarity: "Holographic Rare",
-        set: "Base Set",
-        description: "A Pokémon created by recombining Mew's genes. It's said to have the most savage heart among Pokémon.",
-        releaseDate: "1999-01-09",
-        abilities: [
-          {
-            name: "Psychic",
-            damage: "10+",
-            description: "Does 10 damage plus 10 more damage for each Energy card attached to the Defending Pokémon."
-          },
-          {
-            name: "Barrier",
-            damage: "",
-            description: "Discard 1 Psychic Energy card attached to Mewtwo in order to prevent all damage done to Mewtwo during your opponent's next turn."
-          }
-        ]
-      },
-      {
-        cardId: "machamp",
-        name: "Machamp",
-        number: "068",
-        image: "https://pixabay.com/get/gefde875c46dee89e279955f406b37ca3e66faa1627c1d8e2a42a96f5ca7a2d242f2f051c87dc52079466b106d7741410141e424eb70213f4ec0da3cd1fc442dc_1280.jpg",
-        type: "Fighting",
-        rarity: "Holographic Rare",
-        set: "Base Set",
-        description: "Using its heavy muscles, it throws powerful punches that can send the victim clear over the horizon.",
-        releaseDate: "1999-01-09",
-        abilities: [
-          {
-            name: "Seismic Toss",
-            damage: "60",
-            description: "No additional effect."
-          }
-        ]
-      }
-    ];
+    console.log("Not creating mock cards - only using authentic TCGdex data");
     
-    for (const card of mockCards) {
-      await this.createCard(card);
-    }
-    
-    // Add some cards to the default user's collection for demo purposes
-    const userId = 1;
-    const cardIds = Array.from(this.cards.values()).map(card => card.id);
-    
-    for (let i = 0; i < Math.min(6, cardIds.length); i++) {
-      this.collection.push({
-        id: this.collectionIdCounter++,
-        userId,
-        cardId: cardIds[i],
-        dateAcquired: new Date(),
-        isFavorite: i === 0 // Make the first card a favorite
-      });
-    }
+    // No mock cards are created - we'll only use authentic TCGdex data
+    // This empty method is kept to maintain code structure
   }
   
   // User methods
