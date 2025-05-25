@@ -35,7 +35,10 @@ export default function OpenPackPage() {
     try {
       // Simulate pack opening with a short delay
       setTimeout(async () => {
-        const openedCards = await openPack(currentPack.id);
+        // Use the packId property, not the id property
+        const packIdToOpen = packs?.[0]?.packId || "standard";
+        console.log("Opening pack with ID:", packIdToOpen);
+        const openedCards = await openPack(packIdToOpen);
         setCards(openedCards);
         setPackOpened(true);
         setIsOpening(false);
