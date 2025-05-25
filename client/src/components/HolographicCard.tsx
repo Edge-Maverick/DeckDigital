@@ -283,27 +283,46 @@ export default function HolographicCard({
           }}
         />
         
-        {/* Gradient reflection that changes with viewing angle */}
+        {/* Strong gradient reflection across the entire card */}
         <motion.div 
           className="absolute inset-0 z-16 pointer-events-none"
           style={{
-            background: `
+            backgroundImage: `
               linear-gradient(
-                ${rotateY.get() * 5}deg,
+                ${rotateY.get() * 3}deg,
                 rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.1) 10%,
-                rgba(255, 255, 255, 0.2) 20%,
-                rgba(255, 255, 255, 0.5) 30%,
-                rgba(255, 255, 255, 0.7) 40%,
-                rgba(255, 255, 255, 0.8) 50%,
-                rgba(255, 255, 255, 0.7) 60%,
-                rgba(255, 255, 255, 0.5) 70%,
-                rgba(255, 255, 255, 0.2) 80%,
-                rgba(255, 255, 255, 0.1) 90%,
+                rgba(255, 255, 255, 0.2) 10%,
+                rgba(255, 255, 255, 0.5) 20%,
+                rgba(255, 255, 255, 0.8) 30%,
+                rgba(255, 255, 255, 1) 40%,
+                rgba(255, 255, 255, 1) 50%,
+                rgba(255, 255, 255, 1) 60%,
+                rgba(255, 255, 255, 0.8) 70%,
+                rgba(255, 255, 255, 0.5) 80%,
+                rgba(255, 255, 255, 0.2) 90%,
                 rgba(255, 255, 255, 0) 100%
               )
             `,
-            opacity: 0.6,
+            opacity: 0.9,
+            mixBlendMode: 'screen',
+          }}
+        />
+        
+        {/* Vertical gradient sweep that moves with the card */}
+        <motion.div 
+          className="absolute inset-0 z-17 pointer-events-none"
+          style={{
+            backgroundImage: `
+              linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.5) ${30 - rotateX.get()}%,
+                rgba(255, 255, 255, 0.8) ${50 - rotateX.get()}%,
+                rgba(255, 255, 255, 0.5) ${70 - rotateX.get()}%,
+                rgba(255, 255, 255, 0) 100%
+              )
+            `,
+            opacity: 0.7,
             mixBlendMode: 'overlay',
           }}
         />
