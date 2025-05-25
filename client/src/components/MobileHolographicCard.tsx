@@ -1,25 +1,26 @@
 import React, { useState, useRef } from 'react';
+import { useSpring, a } from '@react-spring/web';
 import { motion } from 'framer-motion';
 import { Card as CardType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-interface HolographicTiltCardProps {
+interface MobileHolographicCardProps {
   card: CardType;
   className?: string;
 }
 
-const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, className }) => {
-  const [isActive, setIsActive] = useState(false);
-  const [coords, setCoords] = useState({ x: 50, y: 50 });
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-  const [scale, setScale] = useState(1);
-  const cardRef = useRef<HTMLDivElement>(null);
+const MobileHolographicCard: React.FC<MobileHolographicCardProps> = ({ card, className }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
-  // Colors for different card types
+  // State for tracking touch/mouse position
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  // State for tracking if user is interacting with card
+  const [isActive, setIsActive] = useState(false);
+  
+  // Colors for card types
   const cardColors = {
     psychic: {
       primary: 'rgba(214, 133, 219, 0.9)',
@@ -36,7 +37,6 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
       highlight: 'rgba(130, 200, 255, 1)',
       accent: 'rgba(40, 100, 180, 1)',
     },
-    // Default fallback
     default: {
       primary: 'rgba(180, 180, 180, 0.9)',
       highlight: 'rgba(230, 230, 230, 1)',
@@ -44,7 +44,7 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
     },
   };
   
-  // Get the color scheme based on card type
+  // Determine color scheme based on card type
   const getCardColorScheme = () => {
     if (!card.type) return cardColors.default;
     
@@ -58,78 +58,93 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
   
   const colorScheme = getCardColorScheme();
   
-  // Update tilt values based on mouse/touch position
-  const updateTilt = (clientX: number, clientY: number) => {
-    if (!cardRef.current) return;
+  // Calculate card rotation and transform based on pointer/touch position
+  const calculateRotation = (x: number, y: number) => {
+    if (!cardRef.current) return { rotateX: 0, rotateY: 0 };
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // Normalize coordinates relative to center (0, 0)
+    const normalizedX = x - rect.left - centerX;
+    const normalizedY = y - rect.top - centerY;
+    
+    // Calculate rotation (more subtle for mobile)
+    const rotateY = isMobile ? normalizedX / centerX * 10 : normalizedX / centerX * 15;
+    const rotateX = isMobile ? -normalizedY / centerY * 10 : -normalizedY / centerY * 15;
+    
+    return { rotateX, rotateY };
+  };
+  
+  // Spring animation for smooth tilting
+  const [springProps, springApi] = useSpring(() => ({ 
+    rotateX: 0, 
+    rotateY: 0, 
+    scale: 1,
+    config: { mass: 2, tension: 350, friction: 40 }
+  }));
+  
+  // Handle touch events (mobile)
+  const handleTouchStart = () => {
+    setIsActive(true);
+    // Scale up slightly on touch
+    springApi.start({ scale: 1.03 });
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isActive || !cardRef.current || e.touches.length === 0) return;
+    
+    const touch = e.touches[0];
+    const rect = cardRef.current.getBoundingClientRect();
+    
+    // Calculate position as percentage for gradient effects
+    const x = ((touch.clientX - rect.left) / rect.width) * 100;
+    const y = ((touch.clientY - rect.top) / rect.height) * 100;
+    setCoords({ x, y });
+    
+    // Calculate rotation for tilt effect
+    const { rotateX, rotateY } = calculateRotation(touch.clientX, touch.clientY);
+    springApi.start({ rotateX, rotateY });
+  };
+  
+  const handleTouchEnd = () => {
+    // Return to neutral position with a slight delay
+    setTimeout(() => {
+      setIsActive(false);
+      springApi.start({ rotateX: 0, rotateY: 0, scale: 1 });
+    }, 100);
+  };
+  
+  // Handle mouse events (desktop)
+  const handleMouseEnter = () => {
+    setIsActive(true);
+    springApi.start({ scale: 1.03 });
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isActive || !cardRef.current) return;
     
     const rect = cardRef.current.getBoundingClientRect();
     
-    // Calculate percentages for effects
-    const x = ((clientX - rect.left) / rect.width) * 100;
-    const y = ((clientY - rect.top) / rect.height) * 100;
+    // Calculate position as percentage for gradient effects
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
     setCoords({ x, y });
     
-    // Calculate tilt angles
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const mouseX = clientX - rect.left;
-    const mouseY = clientY - rect.top;
-    
-    // Normalized values from -1 to 1
-    const normalizedX = (mouseX / centerX) - 1;
-    const normalizedY = -((mouseY / centerY) - 1); // Invert Y axis
-    
-    // Apply tilt (reduced for mobile)
-    const tiltFactor = isMobile ? 10 : 15;
-    setRotateY(normalizedX * tiltFactor);
-    setRotateX(normalizedY * tiltFactor);
-  };
-  
-  // Handle mouse events
-  const handleMouseEnter = () => {
-    setIsActive(true);
-    setScale(1.05);
-  };
-  
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    updateTilt(e.clientX, e.clientY);
+    // Calculate rotation for tilt effect
+    const { rotateX, rotateY } = calculateRotation(e.clientX, e.clientY);
+    springApi.start({ rotateX, rotateY });
   };
   
   const handleMouseLeave = () => {
     setIsActive(false);
-    setRotateX(0);
-    setRotateY(0);
-    setScale(1);
-  };
-  
-  // Handle touch events
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches.length > 0) {
-      setIsActive(true);
-      setScale(1.03);
-      updateTilt(e.touches[0].clientX, e.touches[0].clientY);
-    }
-  };
-  
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches.length > 0) {
-      updateTilt(e.touches[0].clientX, e.touches[0].clientY);
-    }
-  };
-  
-  const handleTouchEnd = () => {
-    // Delay reset for better UX
-    setTimeout(() => {
-      setIsActive(false);
-      setRotateX(0);
-      setRotateY(0);
-      setScale(1);
-    }, 100);
+    springApi.start({ rotateX: 0, rotateY: 0, scale: 1 });
   };
   
   return (
     <div 
-      className={cn("relative", className)}
+      className={cn("relative preserve-3d", className)}
       ref={cardRef}
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
@@ -138,18 +153,20 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <div 
+      <a.div
+        style={{
+          transform: springProps.rotateX.to((rx: number) => 
+            springProps.rotateY.to((ry: number) => 
+              springProps.scale.to((s: number) => 
+                `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${s})`))),
+          transformStyle: 'preserve-3d',
+        }}
         className={cn(
-          "relative h-full w-full overflow-hidden rounded-lg transition-all duration-300",
+          "relative w-full h-full rounded-lg overflow-hidden transition-opacity duration-300",
           isLoaded ? "opacity-100" : "opacity-0"
         )}
-        style={{
-          transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`,
-          transformStyle: 'preserve-3d',
-          transition: 'transform 0.2s ease-out',
-        }}
       >
-        {/* Fine holographic line pattern (diagonal lines like real cards) */}
+        {/* Base card with diagonal line pattern (like real Pokémon cards) */}
         <div 
           className="absolute inset-0 z-10" 
           style={{
@@ -159,7 +176,7 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           }}
         />
         
-        {/* Cross-hatched pattern overlay for authentic foil look */}
+        {/* Cross-hatched fine pattern like real holo foil */}
         <div 
           className="absolute inset-0 z-15" 
           style={{
@@ -168,10 +185,10 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
             opacity: 0.7,
           }}
         />
-
-        {/* Type-specific color gradient (e.g., psychic purple for Alakazam) */}
+        
+        {/* Type-specific color effect */}
         <div 
-          className="absolute inset-0 z-20 transition-opacity duration-200" 
+          className="absolute inset-0 z-20 transition-opacity duration-150" 
           style={{
             background: `radial-gradient(ellipse at ${coords.x}% ${coords.y}%, ${colorScheme.highlight} 0%, ${colorScheme.primary} 40%, ${colorScheme.accent} 80%)`,
             opacity: isActive ? 0.7 : 0.3,
@@ -179,9 +196,9 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           }}
         />
         
-        {/* Dynamic light reflection that follows pointer/touch */}
+        {/* Dynamic light reflection */}
         <div 
-          className="absolute inset-0 z-25 transition-opacity duration-200"
+          className="absolute inset-0 z-25 transition-opacity duration-150"
           style={{
             background: `
               radial-gradient(circle at ${coords.x}% ${coords.y}%, 
@@ -195,7 +212,7 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           }}
         />
         
-        {/* Rainbow prism effect - animated */}
+        {/* Rainbow prism effect */}
         <motion.div 
           className="absolute inset-0 z-30" 
           style={{
@@ -215,29 +232,29 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
           }}
         />
         
-        {/* Sharp horizontal light sweep that moves with tilt */}
+        {/* Horizontal light sweep - the key effect for realism */}
         <div 
-          className="absolute inset-0 z-35 transition-all duration-150" 
+          className="absolute inset-0 z-35 transition-all duration-100" 
           style={{
             background: `
               linear-gradient(
-                ${90 + (rotateY * 2)}deg,
+                ${90 + ((coords.x - 50) / 2)}deg,
                 transparent 0%,
-                transparent ${40 - (rotateX * 2)}%,
+                transparent ${40 + (coords.y / 5)}%,
                 rgba(255, 255, 255, 0.8) 45%,
                 rgba(255, 255, 255, 1) 50%,
                 rgba(255, 255, 255, 0.8) 55%,
-                transparent ${60 + (rotateX * 2)}%,
+                transparent ${60 - (coords.y / 5)}%,
                 transparent 100%
               )
             `,
             opacity: isActive ? 0.9 : 0.3,
             mixBlendMode: 'overlay',
-            transform: `translateY(${rotateX}px)`,
+            transform: `translateY(${(coords.y - 50) / 10}px)`,
           }}
         />
         
-        {/* Sparkle effects like on real holos */}
+        {/* Sparkle effects */}
         <div className="absolute inset-0 z-40 overflow-hidden">
           {[...Array(5)].map((_, i) => (
             <motion.div
@@ -277,9 +294,9 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
             }}
           />
         </div>
-      </div>
+      </animated.div>
     </div>
   );
 };
 
-export default HolographicTiltCard;
+export default MobileHolographicCard;

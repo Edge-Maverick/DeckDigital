@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import HolographicTiltCard from "@/components/HolographicTiltCard";
+import MobileHolographicCard from "@/components/MobileHolographicCard";
 import { Card as CardType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CardDetailModal from "@/components/CardDetailModal";
 import { useQuery } from "@tanstack/react-query";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function HolographicDemo() {
   const [selectedRarity, setSelectedRarity] = useState<string>("all");
