@@ -371,7 +371,22 @@ export class MemStorage implements IStorage {
   
   async createCard(insertCard: InsertCard): Promise<Card> {
     const id = this.cardIdCounter++;
-    const card: Card = { ...insertCard, id };
+    // Properly type and transform the abilities array
+    const abilities = insertCard.abilities ? 
+      insertCard.abilities.map(ability => ({
+        name: ability.name,
+        damage: ability.damage || undefined,
+        description: ability.description || undefined
+      })) : 
+      null;
+      
+    const card: Card = { 
+      ...insertCard, 
+      id,
+      description: insertCard.description || null,
+      releaseDate: insertCard.releaseDate || null,
+      abilities: abilities
+    };
     this.cards.set(insertCard.cardId, card);
     return card;
   }
@@ -387,7 +402,11 @@ export class MemStorage implements IStorage {
   
   async createPack(insertPack: InsertPack): Promise<Pack> {
     const id = this.packIdCounter++;
-    const pack: Pack = { ...insertPack, id };
+    const pack: Pack = { 
+      ...insertPack, 
+      id,
+      cardsPerPack: insertPack.cardsPerPack || 5 // Default to 5 cards per pack
+    };
     this.packs.set(insertPack.packId, pack);
     return pack;
   }
@@ -433,7 +452,7 @@ export class MemStorage implements IStorage {
     });
     
     // Get unique cards
-    const uniqueCardIds = [...new Set(userCollection.map(entry => entry.cardId))];
+    const uniqueCardIds = Array.from(new Set(userCollection.map(entry => entry.cardId)));
     
     // Get card details for each unique card
     const cardsWithOwned: CardWithOwned[] = [];
@@ -443,7 +462,7 @@ export class MemStorage implements IStorage {
       if (card) {
         cardsWithOwned.push({
           ...card,
-          image: this.formatTCGdexImageUrl(card.image),
+          image: this.formatTCGdexImageUrl(card.image, card.cardId),
           owned: cardCounts.get(cardId) || 0
         });
       }
