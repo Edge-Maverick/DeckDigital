@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { motion, AnimatePresence, PanInfo, useAnimation } from "framer-motion";
 import { Card } from "@/lib/types";
 import { useCollection } from "@/hooks/use-collection";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, Star, Sparkles, ImageIcon, Loader2 } from "lucide-react";
+import { getCardTypeColor } from "@/lib/utils";
+import ParticleEffect, { CardSparkleEffect } from "./ParticleEffect";
 
 interface CardRevealProps {
   cards: Card[];
@@ -415,28 +417,45 @@ export default function CardReveal({ cards }: CardRevealProps) {
                       )}
                       
                       {isCurrentCardLoaded && (
-                        <img 
-                          src={currentCard.image}
-                          alt={currentCard.name}
-                          className="max-w-full max-h-full object-contain rounded"
-                          onError={(e) => {
-                            console.error(`Failed to display loaded image for card: ${currentCard.name}`);
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
+                        <>
+                          <img 
+                            src={currentCard.image}
+                            alt={currentCard.name}
+                            className="max-w-full max-h-full object-contain rounded"
+                            onError={(e) => {
+                              console.error(`Failed to display loaded image for card: ${currentCard.name}`);
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                          {/* Card sparkle effect based on rarity and type */}
+                          <CardSparkleEffect 
+                            active={isRevealed} 
+                            rarity={currentCard.rarity} 
+                            type={currentCard.type.toLowerCase()}
+                            position={currentCard.rarity === "Rare" ? "around" : "center"}
+                          />
+                        </>
                       )}
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
               
-              {/* Sparkle animation for rare cards */}
+              {/* Main particle effect for card reveal */}
+              <ParticleEffect 
+                active={isRevealed && isCurrentCardLoaded} 
+                type={currentCard.type.toLowerCase()}
+                intensity={currentCard.rarity === "Rare" ? "high" : currentCard.rarity === "Uncommon" ? "medium" : "low"}
+                duration={1200}
+              />
+              
+              {/* Rarity indicator */}
               {isRevealed && currentCard.rarity === "Rare" && (
                 <motion.div 
                   className="absolute top-0 right-0 p-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3, type: "spring" }}
                 >
                   <Star className="h-6 w-6 text-accent animate-pulse" />
                 </motion.div>
