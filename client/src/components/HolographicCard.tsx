@@ -247,12 +247,12 @@ export default function HolographicCard({
         
         {/* Card content */}
         <div className="relative z-20 bg-white dark:bg-gray-800 h-full rounded-lg overflow-hidden">
-          {/* Card image */}
-          <div className="relative overflow-hidden">
+          {/* Card image - full size with no details */}
+          <div className="relative overflow-hidden h-full">
             <img 
               src={card.image} 
               alt={card.name} 
-              className="w-full h-40 object-contain z-20"
+              className="w-full h-full object-contain z-20"
               loading="lazy"
               onError={(e) => {
                 console.error(`Failed to load image for card: ${card.name}`);
@@ -270,35 +270,19 @@ export default function HolographicCard({
                 }}
               />
             )}
-          </div>
-          
-          {/* Card details */}
-          {showDetails && (
-            <div className="p-2">
-              <p className="font-medium text-sm truncate">{card.name}</p>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-500 dark:text-gray-400">#{card.number}</span>
-                <Badge 
-                  variant={card.type.toLowerCase() as any} 
-                  className="capitalize"
-                >
-                  {card.type}
-                </Badge>
+            
+            {/* Rarity indicator for high rarity cards */}
+            {rarityLevel > 3 && (
+              <div className="absolute top-1 right-1 z-30">
+                <motion.div
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: typeColor }}
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
               </div>
-              
-              {/* Rarity indicator for high rarity cards */}
-              {rarityLevel > 3 && (
-                <div className="absolute top-1 right-1 z-30">
-                  <motion.div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: typeColor }}
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </div>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </motion.div>
     </div>
