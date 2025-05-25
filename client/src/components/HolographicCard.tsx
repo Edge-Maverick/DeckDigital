@@ -215,34 +215,52 @@ export default function HolographicCard({
           }}
         />
         
-        {/* Pokémon card holographic sparkle effect - enhanced dynamic lighting */}
+        {/* Major dramatic light reflection - follows mouse/touch exactly */}
         <motion.div 
-          className="absolute inset-0 z-12 mix-blend-screen pointer-events-none"
+          className="absolute inset-0 z-15 mix-blend-screen pointer-events-none"
           style={{
             backgroundImage: `
-              radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255, 255, 255, 0.9) 0%, transparent 40%),
-              radial-gradient(circle at ${100 - shineX.get()}% ${100 - shineY.get()}%, rgba(255, 255, 255, 0.5) 0%, transparent 30%)
+              radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 5%, rgba(255, 255, 255, 0.3) 20%, transparent 60%)
             `,
-            opacity: 0.7,
-            boxShadow: `inset 0 0 30px rgba(255, 255, 255, 0.5)`,
+            opacity: 1,
           }}
         />
         
-        {/* Additional light reflection */}
+        {/* Sharp horizontal light sweep */}
         <motion.div 
           className="absolute inset-0 z-14 mix-blend-overlay pointer-events-none"
           style={{
             background: `linear-gradient(
-              ${shineX.get() - 50}deg,
+              to bottom,
               transparent 0%,
-              rgba(255, 255, 255, 0.2) 40%,
-              rgba(255, 255, 255, 0.6) 49%,
-              rgba(255, 255, 255, 0.7) 50%,
-              rgba(255, 255, 255, 0.6) 51%,
-              rgba(255, 255, 255, 0.2) 60%,
+              transparent ${shineY.get() - 2}%,
+              rgba(255, 255, 255, 0.4) ${shineY.get() - 1}%,
+              rgba(255, 255, 255, 0.9) ${shineY.get()}%,
+              rgba(255, 255, 255, 0.4) ${shineY.get() + 1}%,
+              transparent ${shineY.get() + 2}%,
               transparent 100%
             )`,
-            opacity: 0.6,
+            opacity: 0.8,
+          }}
+        />
+        
+        {/* Diagonal light sweep */}
+        <motion.div 
+          className="absolute inset-0 z-13 mix-blend-overlay pointer-events-none"
+          style={{
+            background: `linear-gradient(
+              ${(shineY.get() - 50) * 1.8}deg,
+              transparent 0%,
+              transparent 30%,
+              rgba(255, 255, 255, 0.1) 40%,
+              rgba(255, 255, 255, 0.7) 49%,
+              rgba(255, 255, 255, 1) 50%,
+              rgba(255, 255, 255, 0.7) 51%,
+              rgba(255, 255, 255, 0.1) 60%,
+              transparent 70%,
+              transparent 100%
+            )`,
+            opacity: 0.9,
           }}
         />
         
