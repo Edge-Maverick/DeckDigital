@@ -119,7 +119,7 @@ export class MemStorage implements IStorage {
         name: "Base Set Pack",
         description: "5 random cards with at least one rare.",
         price: 500,
-        image: "https://assets.tcgdex.net/en/base/packs/base1/high.jpg",
+        image: "https://tcgdex.net/static/base/base1/pack.webp",
         cardsPerPack: 5
       },
       {
@@ -127,7 +127,7 @@ export class MemStorage implements IStorage {
         name: "Sword & Shield Pack",
         description: "5 random cards with guaranteed ultra-rare.",
         price: 1000,
-        image: "https://assets.tcgdex.net/en/swsh/packs/swsh1/high.jpg",
+        image: "https://tcgdex.net/static/swsh/swsh1/pack.webp",
         cardsPerPack: 5
       },
       {
@@ -135,7 +135,7 @@ export class MemStorage implements IStorage {
         name: "Cosmic Eclipse",
         description: "Discover rare cosmic variants and holographic cards in this limited edition pack.",
         price: 1200,
-        image: "https://assets.tcgdex.net/en/sm/packs/sm12/high.jpg",
+        image: "https://tcgdex.net/static/sm/sm12/pack.webp",
         cardsPerPack: 5
       }
     ];
@@ -312,38 +312,36 @@ export class MemStorage implements IStorage {
     };
   }
   
-  // Format TCGdex image URLs to use high quality and JPG format
+  // Format TCGdex image URLs to use high quality and WebP format
   private formatTCGdexImageUrl(imageUrl: string, cardId?: string): string {
     if (imageUrl && imageUrl.includes('assets.tcgdex.net')) {
-      // Extract card number from the cardId if available (format: "set-number")
-      let cardNumber = "";
-      if (cardId && cardId.includes('-')) {
-        cardNumber = cardId.split('-')[1];
-      }
-
-      // Parse the existing URL
-      const baseUrlParts = imageUrl.split('/');
-      
-      // If the URL already contains a file extension, remove it
-      if (baseUrlParts[baseUrlParts.length - 1].includes('.')) {
-        baseUrlParts.pop();
-      }
-      
-      // If we have a card number, make sure it's in the URL
-      if (cardNumber) {
-        // Check if the last part is already a number
-        const lastPart = baseUrlParts[baseUrlParts.length - 1];
-        if (!isNaN(Number(lastPart))) {
-          // Replace the existing number with our card number
-          baseUrlParts[baseUrlParts.length - 1] = cardNumber;
-        } else {
-          // Add the card number to the path
-          baseUrlParts.push(cardNumber);
+      try {
+        // For card images, we need to construct the URL differently
+        if (cardId && cardId.includes('-')) {
+          const [setCode, cardNumber] = cardId.split('-');
+          
+          // If we're dealing with a card image, format it properly
+          if (setCode && cardNumber) {
+            // TCGdex URL structure: https://assets.tcgdex.net/en/[series]/[set]/[number]/[quality].[format]
+            // Extract the series from the URL (e.g., 'base', 'sm', 'swsh')
+            const urlParts = imageUrl.split('/');
+            const seriesIndex = urlParts.findIndex(part => part === 'en') + 1;
+            const series = seriesIndex < urlParts.length ? urlParts[seriesIndex] : '';
+            
+            if (series) {
+              return `https://assets.tcgdex.net/en/${series}/${setCode}/${cardNumber}/high.webp`;
+            }
+          }
         }
+        
+        // For pack images or when we can't extract card info, use a simpler approach
+        // Just ensure the URL ends with high.webp
+        const baseUrl = imageUrl.split('/high.')[0]; // Remove any existing quality/format suffix
+        return `${baseUrl}/high.webp`;
+      } catch (error) {
+        console.error('Error formatting TCGdex URL:', error);
+        return imageUrl; // Return original URL if there's an error
       }
-      
-      // Add the quality and format
-      return `${baseUrlParts.join('/')}/high.jpg`;
     }
     return imageUrl;
   }
