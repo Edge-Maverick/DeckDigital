@@ -141,10 +141,9 @@ export default function HolographicCard({
     }, 50); // Small delay for smoother transition
   };
   
+  // Remove click handler to prevent modal from opening
   const handleClick = () => {
-    if (onClick) {
-      onClick(card);
-    }
+    // Do nothing - just for interaction without opening modal
   };
 
   // Card type color for the holographic effects

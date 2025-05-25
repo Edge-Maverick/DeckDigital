@@ -81,7 +81,6 @@ export default function HolographicDemo() {
               <div key={card.id} className="flex flex-col items-center">
                 <HolographicCard 
                   card={card} 
-                  onClick={handleCardClick}
                   className="w-full h-64 mb-2"
                 />
 
