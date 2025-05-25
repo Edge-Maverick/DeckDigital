@@ -431,11 +431,22 @@ export class MemStorage implements IStorage {
     };
   }
   
+  // Format TCGdex image URLs to use high quality and PNG format
+  private formatTCGdexImageUrl(imageUrl: string): string {
+    if (imageUrl && imageUrl.includes('assets.tcgdex.net')) {
+      const baseUrlParts = imageUrl.split('/');
+      baseUrlParts.pop();
+      return `${baseUrlParts.join('/')}/high.png`;
+    }
+    return imageUrl;
+  }
+
   // Card methods
   async getAllCards(): Promise<CardWithOwned[]> {
-    // Convert to CardWithOwned format
+    // Convert to CardWithOwned format and update image URLs
     return Array.from(this.cards.values()).map(card => ({
       ...card,
+      image: this.formatTCGdexImageUrl(card.image),
       owned: this.getCardOwnedCount(1, card.id) // Using default user id 1
     }));
   }
@@ -446,6 +457,7 @@ export class MemStorage implements IStorage {
     
     return {
       ...card,
+      image: this.formatTCGdexImageUrl(card.image),
       owned: this.getCardOwnedCount(1, card.id) // Using default user id 1
     };
   }
@@ -491,9 +503,10 @@ export class MemStorage implements IStorage {
     const shuffled = [...allCards].sort(() => 0.5 - Math.random());
     const selectedCards = shuffled.slice(0, pack.cardsPerPack);
     
-    // Convert to CardWithOwned format
+    // Convert to CardWithOwned format with formatted image URLs
     return selectedCards.map(card => ({
       ...card,
+      image: this.formatTCGdexImageUrl(card.image),
       owned: this.getCardOwnedCount(1, card.id) // Using default user id 1
     }));
   }
@@ -523,6 +536,7 @@ export class MemStorage implements IStorage {
       if (card) {
         cardsWithOwned.push({
           ...card,
+          image: this.formatTCGdexImageUrl(card.image),
           owned: cardCounts.get(cardId) || 0
         });
       }
