@@ -313,10 +313,36 @@ export class MemStorage implements IStorage {
   }
   
   // Format TCGdex image URLs to use high quality and PNG format
-  private formatTCGdexImageUrl(imageUrl: string): string {
+  private formatTCGdexImageUrl(imageUrl: string, cardId?: string): string {
     if (imageUrl && imageUrl.includes('assets.tcgdex.net')) {
+      // Extract card number from the cardId if available (format: "set-number")
+      let cardNumber = "";
+      if (cardId && cardId.includes('-')) {
+        cardNumber = cardId.split('-')[1];
+      }
+
+      // Parse the existing URL
       const baseUrlParts = imageUrl.split('/');
-      baseUrlParts.pop();
+      
+      // If the URL already contains a file extension, remove it
+      if (baseUrlParts[baseUrlParts.length - 1].includes('.')) {
+        baseUrlParts.pop();
+      }
+      
+      // If we have a card number, make sure it's in the URL
+      if (cardNumber) {
+        // Check if the last part is already a number
+        const lastPart = baseUrlParts[baseUrlParts.length - 1];
+        if (!isNaN(Number(lastPart))) {
+          // Replace the existing number with our card number
+          baseUrlParts[baseUrlParts.length - 1] = cardNumber;
+        } else {
+          // Add the card number to the path
+          baseUrlParts.push(cardNumber);
+        }
+      }
+      
+      // Add the quality and format
       return `${baseUrlParts.join('/')}/high.png`;
     }
     return imageUrl;
@@ -327,7 +353,7 @@ export class MemStorage implements IStorage {
     // Convert to CardWithOwned format and update image URLs
     return Array.from(this.cards.values()).map(card => ({
       ...card,
-      image: this.formatTCGdexImageUrl(card.image),
+      image: this.formatTCGdexImageUrl(card.image, card.cardId),
       owned: this.getCardOwnedCount(1, card.id) // Using default user id 1
     }));
   }
@@ -338,7 +364,7 @@ export class MemStorage implements IStorage {
     
     return {
       ...card,
-      image: this.formatTCGdexImageUrl(card.image),
+      image: this.formatTCGdexImageUrl(card.image, card.cardId),
       owned: this.getCardOwnedCount(1, card.id) // Using default user id 1
     };
   }
@@ -387,7 +413,7 @@ export class MemStorage implements IStorage {
     // Convert to CardWithOwned format with formatted image URLs
     return selectedCards.map(card => ({
       ...card,
-      image: this.formatTCGdexImageUrl(card.image),
+      image: this.formatTCGdexImageUrl(card.image, card.cardId),
       owned: this.getCardOwnedCount(1, card.id) // Using default user id 1
     }));
   }
