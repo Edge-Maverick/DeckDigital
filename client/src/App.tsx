@@ -9,6 +9,7 @@ import OpenPackPage from "@/pages/OpenPackPage";
 import CollectionPage from "@/pages/CollectionPage";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/hooks/use-theme-provider";
+import { CollectionProvider } from "@/hooks/use-collection";
 
 function Router() {
   return (
@@ -27,10 +28,12 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light">
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <CollectionProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </CollectionProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
