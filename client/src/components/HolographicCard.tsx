@@ -328,13 +328,13 @@ export default function HolographicCard({
         />
         
         {/* Card content */}
-        <div className="relative z-20 bg-white dark:bg-gray-800 h-full rounded-lg overflow-hidden">
+        <div className="relative z-20 bg-white dark:bg-gray-800 h-full rounded-lg">
           {/* Card image - full size with no details */}
-          <div className="relative overflow-hidden h-full">
+          <div className="relative h-full p-1">
             <img 
               src={card.image} 
               alt={card.name} 
-              className="w-full h-full object-contain z-20"
+              className="w-full h-full object-scale-down z-20"
               loading="lazy"
               onError={(e) => {
                 console.error(`Failed to load image for card: ${card.name}`);

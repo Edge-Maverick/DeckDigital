@@ -222,11 +222,11 @@ const HolographicTiltCard: React.FC<HolographicTiltCardProps> = ({ card, classNa
         />
         
         {/* Card content */}
-        <div className="absolute inset-0 z-40">
+        <div className="absolute inset-0 z-40 p-1"> {/* Added padding to prevent border cut-off */}
           <img 
             src={card.image} 
             alt={card.name || "Trading Card"} 
-            className="h-full w-full object-cover rounded-lg"
+            className="h-full w-full object-scale-down rounded-lg" /* Changed to scale-down to ensure full card visibility */
             onLoad={() => setIsLoaded(true)}
             onError={(e) => {
               console.error(`Failed to load image for card: ${card.name}`);

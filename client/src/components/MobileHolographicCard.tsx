@@ -159,7 +159,7 @@ const MobileHolographicCard: React.FC<MobileHolographicCardProps> = ({ card, cla
           transformStyle: 'preserve-3d',
         }}
         className={cn(
-          "relative w-full h-full rounded-lg overflow-hidden transition-opacity duration-300",
+          "relative w-full h-full rounded-lg transition-opacity duration-300",
           isLoaded ? "opacity-100" : "opacity-0"
         )}
       >
@@ -278,11 +278,11 @@ const MobileHolographicCard: React.FC<MobileHolographicCardProps> = ({ card, cla
         </div>
         
         {/* Card content */}
-        <div className="absolute inset-0 z-45">
+        <div className="absolute inset-0 z-45 p-1"> {/* Added padding to prevent border cut-off */}
           <img 
             src={card.image} 
             alt={card.name || "Pokémon Card"} 
-            className="h-full w-full object-contain"
+            className="h-full w-full object-scale-down" /* Changed to scale-down to ensure full card visibility */
             onLoad={() => setIsLoaded(true)}
             onError={(e) => {
               console.error(`Failed to load image for card: ${card.name}`);
