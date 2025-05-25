@@ -268,9 +268,9 @@ export default function HolographicCard({
         <motion.div 
           className="absolute inset-0 z-13 mix-blend-color-dodge pointer-events-none overflow-hidden"
           style={{
-            background: "linear-gradient(45deg, rgba(255,0,0,0.3), rgba(255,255,0,0.3), rgba(0,255,0,0.3), rgba(0,255,255,0.3), rgba(0,0,255,0.3), rgba(255,0,255,0.3))",
+            background: "linear-gradient(45deg, rgba(255,0,0,0.4), rgba(255,255,0,0.4), rgba(0,255,0,0.4), rgba(0,255,255,0.4), rgba(0,0,255,0.4), rgba(255,0,255,0.4))",
             backgroundSize: "600% 600%",
-            opacity: 0.4,
+            opacity: 0.5,
             filter: `brightness(1.5)`,
           }}
           animate={{
@@ -280,6 +280,31 @@ export default function HolographicCard({
             duration: 6,
             repeat: Infinity,
             repeatType: "mirror",
+          }}
+        />
+        
+        {/* Gradient reflection that changes with viewing angle */}
+        <motion.div 
+          className="absolute inset-0 z-16 pointer-events-none"
+          style={{
+            background: `
+              linear-gradient(
+                ${rotateY.get() * 5}deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 10%,
+                rgba(255, 255, 255, 0.2) 20%,
+                rgba(255, 255, 255, 0.5) 30%,
+                rgba(255, 255, 255, 0.7) 40%,
+                rgba(255, 255, 255, 0.8) 50%,
+                rgba(255, 255, 255, 0.7) 60%,
+                rgba(255, 255, 255, 0.5) 70%,
+                rgba(255, 255, 255, 0.2) 80%,
+                rgba(255, 255, 255, 0.1) 90%,
+                rgba(255, 255, 255, 0) 100%
+              )
+            `,
+            opacity: 0.6,
+            mixBlendMode: 'overlay',
           }}
         />
         
