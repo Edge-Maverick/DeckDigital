@@ -22,15 +22,14 @@ export default function HolographicDemo() {
     // Assign simulated rarity based on card properties
     let simulatedRarity = "Common";
     
-    // Use card number or other properties to determine rarity for demo
-    const cardNumber = parseInt(card.number.replace(/\D/g, '') || "0");
-    if (cardNumber % 10 === 0) {
+    // Use card index to determine rarity for demo (safer than parsing card number)
+    if (index % 10 === 0) {
       simulatedRarity = "Secret Rare";
-    } else if (cardNumber % 5 === 0) {
+    } else if (index % 5 === 0) {
       simulatedRarity = "Ultra Rare";
-    } else if (cardNumber % 3 === 0) {
+    } else if (index % 3 === 0) {
       simulatedRarity = "Rare Holo";
-    } else if (cardNumber % 2 === 0) {
+    } else if (index % 2 === 0) {
       simulatedRarity = "Uncommon";
     }
     
