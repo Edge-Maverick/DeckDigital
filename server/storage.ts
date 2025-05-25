@@ -427,12 +427,23 @@ export class MemStorage implements IStorage {
     const shuffled = [...allCards].sort(() => 0.5 - Math.random());
     const selectedCards = shuffled.slice(0, pack.cardsPerPack);
     
-    // Convert to CardWithOwned format with formatted image URLs
-    return selectedCards.map(card => ({
-      ...card,
-      image: this.formatTCGdexImageUrl(card.image, card.cardId),
-      owned: this.getCardOwnedCount(1, card.id) // Using default user id 1
-    }));
+    // Assign varied rarities based on pack type
+    const rarityDistribution = this.getRarityDistributionForPack(packId);
+    
+    // Apply rarity distribution to the cards
+    const enhancedCards = selectedCards.map((card, index) => {
+      // Determine rarity based on the distribution and index
+      const assignedRarity = rarityDistribution[index] || "Common";
+      
+      return {
+        ...card,
+        rarity: assignedRarity, // Override with our assigned rarity
+        image: this.formatTCGdexImageUrl(card.image, card.cardId),
+        owned: this.getCardOwnedCount(1, card.id) // Using default user id 1
+      };
+    });
+    
+    return enhancedCards;
   }
   
   // Collection methods
@@ -572,6 +583,51 @@ export class MemStorage implements IStorage {
     };
     
     return rarityWeights[rarity] || 0;
+  }
+  
+  private getRarityDistributionForPack(packId: string): string[] {
+    // Different rarity distributions based on pack type
+    switch (packId) {
+      case "standard":
+        // Standard pack: 3 common, 1 uncommon, 1 rare
+        return [
+          "Common", 
+          "Common", 
+          "Common", 
+          "Uncommon", 
+          "Rare"
+        ];
+        
+      case "premium":
+        // Premium pack: 2 common, 1 uncommon, 1 rare, 1 ultra rare
+        return [
+          "Common",
+          "Common",
+          "Uncommon",
+          "Rare Holo",
+          "Ultra Rare"
+        ];
+        
+      case "cosmic":
+        // Cosmic pack: 1 common, 2 uncommon, 1 rare holo, 1 secret rare
+        return [
+          "Common",
+          "Uncommon",
+          "Uncommon",
+          "Rare Holo",
+          "Secret Rare"
+        ];
+        
+      default:
+        // Default distribution for unknown pack types
+        return [
+          "Common",
+          "Common",
+          "Common",
+          "Uncommon",
+          "Rare"
+        ];
+    }
   }
   
   private getLatestAcquisitionDate(userId: number, cardId: number): Date {
