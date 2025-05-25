@@ -269,17 +269,7 @@ export default function HolographicCard({
               />
             )}
             
-            {/* Rarity indicator for high rarity cards */}
-            {rarityLevel > 3 && (
-              <div className="absolute top-1 right-1 z-30">
-                <motion.div
-                  className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: typeColor }}
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </div>
-            )}
+            {/* Removed rarity indicator circle */}
           </div>
         </div>
       </motion.div>
