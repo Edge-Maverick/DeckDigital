@@ -648,7 +648,6 @@ export default function CardReveal({ cards }: CardRevealProps) {
           </div>
         </div>
       </motion.div>
-      </motion.div>
     </AnimatePresence>
   );
 }

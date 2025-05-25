@@ -112,14 +112,14 @@ export class MemStorage implements IStorage {
     
     await this.createUser(defaultUser);
     
-    // Create default packs with TCGdex assets
+    // Create default packs with placeholder assets
     const packs: InsertPack[] = [
       {
         packId: "standard",
         name: "Base Set Pack",
         description: "5 random cards with at least one rare.",
         price: 500,
-        image: "https://tcgdex.net/static/base/base1/pack.webp",
+        image: "https://images.unsplash.com/photo-1627627242449-e647449d6a80?w=400&q=80",
         cardsPerPack: 5
       },
       {
@@ -127,7 +127,7 @@ export class MemStorage implements IStorage {
         name: "Sword & Shield Pack",
         description: "5 random cards with guaranteed ultra-rare.",
         price: 1000,
-        image: "https://tcgdex.net/static/swsh/swsh1/pack.webp",
+        image: "https://images.unsplash.com/photo-1614271762795-2b2bd5b67b8b?w=400&q=80",
         cardsPerPack: 5
       },
       {
@@ -135,7 +135,7 @@ export class MemStorage implements IStorage {
         name: "Cosmic Eclipse",
         description: "Discover rare cosmic variants and holographic cards in this limited edition pack.",
         price: 1200,
-        image: "https://tcgdex.net/static/sm/sm12/pack.webp",
+        image: "https://images.unsplash.com/photo-1540206395-68808572332f?w=400&q=80",
         cardsPerPack: 5
       }
     ];

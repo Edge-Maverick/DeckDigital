@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useSpring, a } from '@react-spring/web';
+import { useSpring, animated } from '@react-spring/web';
 import { motion } from 'framer-motion';
 import { Card as CardType } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -153,12 +153,9 @@ const MobileHolographicCard: React.FC<MobileHolographicCardProps> = ({ card, cla
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <a.div
+      <animated.div
         style={{
-          transform: springProps.rotateX.to((rx: number) => 
-            springProps.rotateY.to((ry: number) => 
-              springProps.scale.to((s: number) => 
-                `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${s})`))),
+          transform: `perspective(1200px) rotateX(${springProps.rotateX}deg) rotateY(${springProps.rotateY}deg) scale(${springProps.scale})`,
           transformStyle: 'preserve-3d',
         }}
         className={cn(
