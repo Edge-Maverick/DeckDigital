@@ -5,10 +5,32 @@ import { useCollection } from "@/hooks/use-collection";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, Star, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, Sparkles, ImageIcon, Loader2 } from "lucide-react";
 
 interface CardRevealProps {
   cards: Card[];
+}
+
+// Image preloader component (hidden from UI)
+function ImagePreloader({ src, onLoad, onError }: { src: string, onLoad: () => void, onError: () => void }) {
+  useEffect(() => {
+    if (!src) {
+      onError();
+      return;
+    }
+    
+    const img = new Image();
+    img.onload = onLoad;
+    img.onerror = onError;
+    img.src = src;
+
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [src, onLoad, onError]);
+
+  return null;
 }
 
 export default function CardReveal({ cards }: CardRevealProps) {
@@ -16,14 +38,56 @@ export default function CardReveal({ cards }: CardRevealProps) {
   const [isRevealed, setIsRevealed] = useState(false);
   const [allCardsViewed, setAllCardsViewed] = useState(false);
   const [viewedCards, setViewedCards] = useState<Set<number>>(new Set());
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set([0])); // Start by loading first card
+  const [loadingImages, setLoadingImages] = useState<Set<number>>(new Set([0, 1])); // Start loading first two cards
+  const [imageLoadFailed, setImageLoadFailed] = useState<Set<number>>(new Set());
   const { addCardsToCollection } = useCollection();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const cardRef = useRef<HTMLDivElement>(null);
+  const cancelLoadingRef = useRef<Set<number>>(new Set());
 
   // Determine if we can navigate in either direction
   const canGoNext = currentCardIndex < cards.length - 1;
   const canGoPrevious = currentCardIndex > 0;
+
+  // Current card loading status
+  const isCurrentCardLoaded = loadedImages.has(currentCardIndex);
+  const isCurrentCardLoading = loadingImages.has(currentCardIndex) && !loadedImages.has(currentCardIndex);
+  const hasCurrentCardFailed = imageLoadFailed.has(currentCardIndex);
+
+  // Handle image preloading logic
+  useEffect(() => {
+    // Prioritize loading the next card when the current one is viewed
+    if (isRevealed && canGoNext && !loadingImages.has(currentCardIndex + 1)) {
+      setLoadingImages(prev => {
+        const newSet = new Set(prev);
+        newSet.add(currentCardIndex + 1);
+        return newSet;
+      });
+    }
+    
+    // If user is viewing a card, also preload the previous card if available
+    if (isRevealed && canGoPrevious && !loadingImages.has(currentCardIndex - 1)) {
+      setLoadingImages(prev => {
+        const newSet = new Set(prev);
+        newSet.add(currentCardIndex - 1);
+        return newSet;
+      });
+    }
+  }, [currentCardIndex, isRevealed, canGoNext, canGoPrevious, loadingImages]);
+
+  // Cancel loading images that are no longer needed (if user skips too quickly)
+  useEffect(() => {
+    // Add all cards to cancel set first
+    for (let i = 0; i < cards.length; i++) {
+      if (i !== currentCardIndex && i !== currentCardIndex - 1 && i !== currentCardIndex + 1) {
+        cancelLoadingRef.current.add(i);
+      } else {
+        cancelLoadingRef.current.delete(i);
+      }
+    }
+  }, [currentCardIndex, cards.length]);
 
   // Update viewed cards set when a card is revealed
   useEffect(() => {
@@ -43,6 +107,42 @@ export default function CardReveal({ cards }: CardRevealProps) {
     }
   }, [viewedCards, cards.length]);
 
+  // Handle successful image load
+  const handleImageLoaded = useCallback((index: number) => {
+    if (cancelLoadingRef.current.has(index)) {
+      return; // Skip if this image load was canceled
+    }
+    
+    setLoadedImages(prev => {
+      const newSet = new Set(prev);
+      newSet.add(index);
+      return newSet;
+    });
+    
+    setLoadingImages(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(index);
+      return newSet;
+    });
+  }, []);
+
+  // Handle image load error
+  const handleImageError = useCallback((index: number) => {
+    console.error(`Failed to load image for card: ${cards[index]?.name}`);
+    
+    setImageLoadFailed(prev => {
+      const newSet = new Set(prev);
+      newSet.add(index);
+      return newSet;
+    });
+    
+    setLoadingImages(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(index);
+      return newSet;
+    });
+  }, [cards]);
+
   // Card reveal handling
   const handleRevealCard = () => {
     // Simulate haptic feedback
@@ -59,20 +159,51 @@ export default function CardReveal({ cards }: CardRevealProps) {
   const goToNextCard = useCallback(() => {
     if (canGoNext) {
       setIsRevealed(false);
+      
+      // Immediately start loading the next card if not already loading
+      const nextIndex = currentCardIndex + 1;
+      if (!loadingImages.has(nextIndex) && !loadedImages.has(nextIndex)) {
+        setLoadingImages(prev => {
+          const newSet = new Set(prev);
+          newSet.add(nextIndex);
+          return newSet;
+        });
+      }
+      
       setTimeout(() => {
-        setCurrentCardIndex(prev => prev + 1);
+        setCurrentCardIndex(nextIndex);
+        
+        // If we're going to be 2 cards ahead, preload that one too
+        if (nextIndex + 1 < cards.length && !loadingImages.has(nextIndex + 1) && !loadedImages.has(nextIndex + 1)) {
+          setLoadingImages(prev => {
+            const newSet = new Set(prev);
+            newSet.add(nextIndex + 1);
+            return newSet;
+          });
+        }
       }, 200);
     }
-  }, [canGoNext]);
+  }, [canGoNext, currentCardIndex, loadingImages, loadedImages, cards.length]);
 
   const goToPreviousCard = useCallback(() => {
     if (canGoPrevious) {
       setIsRevealed(false);
+      
+      // Immediately start loading the previous card if not already loading
+      const prevIndex = currentCardIndex - 1;
+      if (!loadingImages.has(prevIndex) && !loadedImages.has(prevIndex)) {
+        setLoadingImages(prev => {
+          const newSet = new Set(prev);
+          newSet.add(prevIndex);
+          return newSet;
+        });
+      }
+      
       setTimeout(() => {
-        setCurrentCardIndex(prev => prev - 1);
+        setCurrentCardIndex(prevIndex);
       }, 200);
     }
-  }, [canGoPrevious]);
+  }, [canGoPrevious, currentCardIndex, loadingImages, loadedImages]);
 
   // Handle swipe gesture
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
@@ -111,6 +242,22 @@ export default function CardReveal({ cards }: CardRevealProps) {
   // Reveal all cards sequentially
   const handleRevealAll = useCallback(() => {
     if (allCardsViewed) return;
+    
+    // Start loading all cards immediately
+    const cardsToLoad = new Set<number>();
+    for (let i = 0; i < cards.length; i++) {
+      if (!loadedImages.has(i) && !loadingImages.has(i)) {
+        cardsToLoad.add(i);
+      }
+    }
+    
+    if (cardsToLoad.size > 0) {
+      setLoadingImages(prev => {
+        const newSet = new Set(prev);
+        cardsToLoad.forEach(i => newSet.add(i));
+        return newSet;
+      });
+    }
     
     // First reveal the current card if not already revealed
     if (!isRevealed) {
@@ -153,7 +300,7 @@ export default function CardReveal({ cards }: CardRevealProps) {
       
       revealNext();
     }
-  }, [allCardsViewed, cards.length, currentCardIndex, isRevealed]);
+  }, [allCardsViewed, cards.length, currentCardIndex, isRevealed, loadedImages, loadingImages, cards]);
 
   const handleAddToCollection = () => {
     addCardsToCollection(cards);
@@ -177,6 +324,21 @@ export default function CardReveal({ cards }: CardRevealProps) {
 
   return (
     <AnimatePresence>
+      {/* Image preloaders (hidden from UI) */}
+      {cards.map((card, index) => {
+        if (loadingImages.has(index) && !loadedImages.has(index) && !cancelLoadingRef.current.has(index)) {
+          return (
+            <ImagePreloader 
+              key={`preloader-${index}`}
+              src={card.image} 
+              onLoad={() => handleImageLoaded(index)}
+              onError={() => handleImageError(index)}
+            />
+          );
+        }
+        return null;
+      })}
+      
       <motion.div 
         className="w-full"
         initial={{ opacity: 0 }}
@@ -237,15 +399,32 @@ export default function CardReveal({ cards }: CardRevealProps) {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="w-full h-full flex items-center justify-center">
-                      <img 
-                        src={currentCard.image} 
-                        alt={currentCard.name} 
-                        className="max-w-full max-h-full object-contain rounded"
-                        onError={(e) => {
-                          console.error(`Failed to load image for card: ${currentCard.name}`);
-                          e.currentTarget.src = 'https://via.placeholder.com/300x420?text=Card+Image+Unavailable';
-                        }}
-                      />
+                      {isCurrentCardLoading && (
+                        <div className="flex flex-col items-center justify-center">
+                          <Loader2 className="w-12 h-12 animate-spin text-primary mb-2" />
+                          <p className="text-sm text-gray-500">Loading card...</p>
+                        </div>
+                      )}
+                      
+                      {hasCurrentCardFailed && (
+                        <div className="flex flex-col items-center justify-center">
+                          <ImageIcon className="w-12 h-12 text-gray-400 mb-2" />
+                          <p className="text-sm text-gray-500">Image unavailable</p>
+                          <p className="text-xs text-gray-400 mt-1">{currentCard.name}</p>
+                        </div>
+                      )}
+                      
+                      {isCurrentCardLoaded && (
+                        <img 
+                          src={currentCard.image}
+                          alt={currentCard.name}
+                          className="max-w-full max-h-full object-contain rounded"
+                          onError={(e) => {
+                            console.error(`Failed to display loaded image for card: ${currentCard.name}`);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      )}
                     </div>
                   </motion.div>
                 )}
