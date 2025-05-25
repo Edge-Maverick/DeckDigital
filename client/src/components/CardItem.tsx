@@ -26,6 +26,9 @@ export default function CardItem({ card, onClick, className }: CardItemProps) {
           alt={card.name} 
           className="w-full h-40 object-cover"
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.src = `https://via.placeholder.com/300x400/FF6B6B/FFFFFF?text=${encodeURIComponent(card.name)}`;
+          }}
         />
         <div className="p-2">
           <p className="font-medium text-sm truncate">{card.name}</p>

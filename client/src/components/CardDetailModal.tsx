@@ -70,6 +70,9 @@ export default function CardDetailModal({ card, isOpen, onClose }: CardDetailMod
               src={card.image} 
               alt={card.name} 
               className="w-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = `https://via.placeholder.com/300x400/FF6B6B/FFFFFF?text=${encodeURIComponent(card.name)}`;
+              }}
             />
           </div>
           
