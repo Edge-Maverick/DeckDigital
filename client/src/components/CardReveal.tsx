@@ -5,7 +5,7 @@ import { useCollection } from "@/hooks/use-collection";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, Sparkles } from "lucide-react";
 
 interface CardRevealProps {
   cards: Card[];
@@ -13,7 +13,7 @@ interface CardRevealProps {
 
 export default function CardReveal({ cards }: CardRevealProps) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
   const [allCardsViewed, setAllCardsViewed] = useState(false);
   const [viewedCards, setViewedCards] = useState<Set<number>>(new Set());
   const { addCardsToCollection } = useCollection();
@@ -25,16 +25,16 @@ export default function CardReveal({ cards }: CardRevealProps) {
   const canGoNext = currentCardIndex < cards.length - 1;
   const canGoPrevious = currentCardIndex > 0;
 
-  // Update viewed cards set when a card is flipped
+  // Update viewed cards set when a card is revealed
   useEffect(() => {
-    if (isCardFlipped) {
+    if (isRevealed) {
       setViewedCards(prev => {
         const newSet = new Set(prev);
         newSet.add(currentCardIndex);
         return newSet;
       });
     }
-  }, [isCardFlipped, currentCardIndex]);
+  }, [isRevealed, currentCardIndex]);
 
   // Check if all cards have been viewed
   useEffect(() => {
@@ -43,34 +43,34 @@ export default function CardReveal({ cards }: CardRevealProps) {
     }
   }, [viewedCards, cards.length]);
 
-  // Flip card animation handling
-  const handleFlipCard = () => {
+  // Card reveal handling
+  const handleRevealCard = () => {
     // Simulate haptic feedback
     if (window.navigator && window.navigator.vibrate) {
       window.navigator.vibrate(50);
     }
     
-    if (!isCardFlipped) {
-      setIsCardFlipped(true);
+    if (!isRevealed) {
+      setIsRevealed(true);
     }
   };
 
   // Navigation handlers
   const goToNextCard = useCallback(() => {
     if (canGoNext) {
-      setIsCardFlipped(false);
+      setIsRevealed(false);
       setTimeout(() => {
         setCurrentCardIndex(prev => prev + 1);
-      }, 200); // Wait for flip animation to complete
+      }, 200);
     }
   }, [canGoNext]);
 
   const goToPreviousCard = useCallback(() => {
     if (canGoPrevious) {
-      setIsCardFlipped(false);
+      setIsRevealed(false);
       setTimeout(() => {
         setCurrentCardIndex(prev => prev - 1);
-      }, 200); // Wait for flip animation to complete
+      }, 200);
     }
   }, [canGoPrevious]);
 
@@ -93,9 +93,9 @@ export default function CardReveal({ cards }: CardRevealProps) {
       } else if (e.key === 'ArrowRight' && canGoNext) {
         goToNextCard();
       } else if (e.key === ' ' || e.key === 'Enter') {
-        // Space or Enter to flip card
-        if (!isCardFlipped) {
-          handleFlipCard();
+        // Space or Enter to reveal card
+        if (!isRevealed) {
+          handleRevealCard();
         } else if (canGoNext) {
           goToNextCard();
         }
@@ -106,17 +106,17 @@ export default function CardReveal({ cards }: CardRevealProps) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isCardFlipped, canGoNext, canGoPrevious, goToNextCard, goToPreviousCard]);
+  }, [isRevealed, canGoNext, canGoPrevious, goToNextCard, goToPreviousCard]);
 
   // Reveal all cards sequentially
   const handleRevealAll = useCallback(() => {
     if (allCardsViewed) return;
     
-    // First flip the current card if not already flipped
-    if (!isCardFlipped) {
-      setIsCardFlipped(true);
+    // First reveal the current card if not already revealed
+    if (!isRevealed) {
+      setIsRevealed(true);
       
-      // Wait for the card to flip
+      // Wait for the card to reveal
       setTimeout(() => {
         revealRemainingCards(currentCardIndex + 1);
       }, 300);
@@ -133,12 +133,12 @@ export default function CardReveal({ cards }: CardRevealProps) {
           return;
         }
         
-        setIsCardFlipped(false);
+        setIsRevealed(false);
         setTimeout(() => {
           setCurrentCardIndex(index);
           
           setTimeout(() => {
-            setIsCardFlipped(true);
+            setIsRevealed(true);
             setViewedCards(prev => {
               const newSet = new Set(prev);
               newSet.add(index);
@@ -153,7 +153,7 @@ export default function CardReveal({ cards }: CardRevealProps) {
       
       revealNext();
     }
-  }, [allCardsViewed, cards.length, currentCardIndex, isCardFlipped]);
+  }, [allCardsViewed, cards.length, currentCardIndex, isRevealed]);
 
   const handleAddToCollection = () => {
     addCardsToCollection(cards);
@@ -202,35 +202,66 @@ export default function CardReveal({ cards }: CardRevealProps) {
           {/* Card container with swipe gesture */}
           <motion.div 
             ref={cardRef}
-            className="card-container w-64 h-80 mx-auto"
+            className="w-64 h-80 mx-auto relative"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={handleDragEnd}
           >
             <div 
-              className={`card relative w-full h-full rounded-lg shadow-lg overflow-hidden ${isCardFlipped ? 'flipped' : ''}`}
-              onClick={handleFlipCard}
+              className="w-full h-full rounded-lg shadow-lg overflow-hidden relative cursor-pointer"
+              onClick={handleRevealCard}
             >
-              <div className="card-back bg-gradient-to-br from-primary to-secondary p-3 flex items-center justify-center">
-                <div className="w-full h-full bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">
-                  <svg className="w-16 h-16 text-primary/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                </div>
-              </div>
-              <div className="card-front bg-white dark:bg-gray-800 p-2">
-                <div className="w-full h-full flex items-center justify-center">
-                  <img 
-                    src={currentCard.image} 
-                    alt={currentCard.name} 
-                    className="max-w-full max-h-full object-contain rounded"
-                    onError={(e) => {
-                      console.error(`Failed to load image for card: ${currentCard.name}`);
-                      e.currentTarget.src = 'https://via.placeholder.com/300x420?text=Card+Image+Unavailable';
-                    }}
-                  />
-                </div>
-              </div>
+              {/* Unrevealed state (card back) */}
+              <AnimatePresence>
+                {!isRevealed && (
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-br from-primary to-secondary p-3 flex items-center justify-center"
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="w-full h-full bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">
+                      <Sparkles className="w-16 h-16 text-primary/50" />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              {/* Revealed state (card front) */}
+              <AnimatePresence>
+                {isRevealed && (
+                  <motion.div 
+                    className="absolute inset-0 bg-white dark:bg-gray-800 p-2"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="w-full h-full flex items-center justify-center">
+                      <img 
+                        src={currentCard.image} 
+                        alt={currentCard.name} 
+                        className="max-w-full max-h-full object-contain rounded"
+                        onError={(e) => {
+                          console.error(`Failed to load image for card: ${currentCard.name}`);
+                          e.currentTarget.src = 'https://via.placeholder.com/300x420?text=Card+Image+Unavailable';
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              {/* Sparkle animation for rare cards */}
+              {isRevealed && currentCard.rarity === "Rare" && (
+                <motion.div 
+                  className="absolute top-0 right-0 p-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Star className="h-6 w-6 text-accent animate-pulse" />
+                </motion.div>
+              )}
             </div>
           </motion.div>
           
