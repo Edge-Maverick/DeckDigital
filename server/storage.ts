@@ -175,7 +175,7 @@ export class MemStorage implements IStorage {
       cardId: tcgdexCard.id,
       name: tcgdexCard.name.en,
       number: tcgdexCard.number,
-      image: tcgdexCard.image || "https://via.placeholder.com/300x400?text=Card+Image",
+      image: tcgdexCard.image ? `${tcgdexCard.image}.png` : "https://via.placeholder.com/300x400?text=Card+Image",
       type: tcgdexCard.types?.[0] || "Normal",
       rarity: tcgdexCard.rarity || "Common",
       set: tcgdexCard.set?.name?.en || "Base Set",
